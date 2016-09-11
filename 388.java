@@ -2,12 +2,12 @@ public class Solution {
     public class Dir {
         private int len;
         private int level;
-        private boolean file;
+        private boolean isFile;
         
-        public Dir(int len, int level, boolean file) {
+        public Dir(int len, int level, boolean isFile) {
             this.len = len;
             this.level = level;
-            this.file = file;
+            this.isFile = isFile;
         }
     }
     
@@ -19,8 +19,8 @@ public class Solution {
         for (int i = 0; i < size; ++i) {
             int level = strs[i].lastIndexOf("\t") + 1;
             int len = strs[i].length() - level + 1;
-            boolean file = (strs[i].indexOf('.') != -1);
-            dirs[i] = new Dir(len, level, file);
+            boolean isFile = (strs[i].indexOf('.') != -1);
+            dirs[i] = new Dir(len, level, isFile);
         }
         
         HashMap<Integer, Integer> map = new HashMap<>();
@@ -33,7 +33,7 @@ public class Solution {
             }
             dirs[i].len = length;
             map.put(lev, length);
-            if (dirs[i].file && length > rst) rst = length;
+            if (dirs[i].isFile && length > rst) rst = length;
         }
         
         if (rst > 0) return rst - 1;
