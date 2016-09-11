@@ -1,1 +1,3 @@
-# my-original-leetcode-solutions
+###my original leetcode solutions
+
+written in Java
