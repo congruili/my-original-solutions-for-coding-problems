@@ -37,7 +37,6 @@ public class ZiplineHills {
             }
             for (int j: nextLevel) queue.offer(j);
             rst++;
-
         }
 
         System.out.println(rst - 1);
