@@ -2,11 +2,8 @@ public class NonDecreasing2 {
 
     public static void main(String[] args) {
         int[][] grid = {{8, 2, 4}, {0, 7, 1}, {3, 7, 9}};
-
         int rst = findLongest(grid);
-
         System.out.println(rst);
-
     }
 
     public static int findLongest(int[][] grid) {
@@ -23,7 +20,6 @@ public class NonDecreasing2 {
         }
 
         return max;
-
     }
 
     public static int max = 0;
@@ -47,8 +43,6 @@ public class NonDecreasing2 {
         }
 
         used[i][j] = false;
-
-
     }
 
     public static boolean start(int[][] grid, int i, int j) {
