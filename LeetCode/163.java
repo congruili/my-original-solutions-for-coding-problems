@@ -12,7 +12,7 @@ public class Solution {
         if (lower < nums[0]) rst.add(helper(lower, nums[0] - 1));
 
         for (int i = 1; i < len; ++i) {
-            if (nums[i - 1] + 1 >= nums[i]) continue;
+            if (nums[i - 1] == nums[i] || nums[i - 1] + 1 == nums[i]) continue;
             rst.add(helper(nums[i - 1] + 1, nums[i] - 1));
         }
 
