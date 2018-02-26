@@ -1,2 +1,1 @@
-###my original coding problem solutions
-written in Java
+### my original coding problem solutions written in Java
