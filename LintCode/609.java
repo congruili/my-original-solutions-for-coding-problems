@@ -1,3 +1,5 @@
+// O(n) scan left ->  <- right
+
 public class Solution {
     /**
      * @param nums: an array of integer
@@ -11,16 +13,18 @@ public class Solution {
         }
         
         Arrays.sort(nums);
-        int len = nums.length;
-        int rst = 0;
         
-        for (int i = 0; i < len - 1; ++i) {
-            int right = len - 1;
-            while (right > i && nums[i] + nums[right] > target) {
+        int rst = 0;
+        int left = 0, right = nums.length - 1;
+        
+        while (left < right) {
+            int sum = nums[left] + nums[right];
+            if (sum <= target) {
+                rst += (right - left);
+                left++;
+            } else {
                 right--;
             }
-            
-            rst += (right - i);
         }
         
         return rst;
