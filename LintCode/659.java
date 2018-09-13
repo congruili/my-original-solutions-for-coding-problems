@@ -7,8 +7,15 @@ public class Solution {
      */
     public String encode(List<String> strs) {
         // write your code here
-        StringBuilder sb = new StringBuilder();
+        if (strs == null) {
+            return null;
+        }
         
+        if (strs.size() == 0) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
         for (String s: strs) {
             sb.append(s.length());
             sb.append('#');
@@ -24,20 +31,28 @@ public class Solution {
      */
     public List<String> decode(String str) {
         // write your code here
-        List<String> list = new ArrayList<>();
+        if (str == null) {
+            return null;
+        }
         
+        if (str.length() == 0) {
+            return new ArrayList<String>();
+        }
+        
+        List<String> list = new ArrayList<>();
         int ind = 0;
+        
         while (ind < str.length()) {
-            int len = 0;
+            int val = 0;
             while (Character.isDigit(str.charAt(ind))) {
-                len = len * 10 + str.charAt(ind) - '0';
+                val = val * 10 + str.charAt(ind) - '0';
                 ind++;
             }
-            
             ind++;
-            String curt = str.substring(ind, ind + len);
+            String curt = str.substring(ind, ind + val);
             list.add(curt);
-            ind += len;
+            
+            ind += val;
         }
         
         return list;

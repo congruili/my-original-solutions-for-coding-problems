@@ -1,10 +1,11 @@
+// 616. Course Schedule II
+
 class Course {
     int degree;
-    List<Integer> nextCourses;
-    
+    List<Integer> next;
     public Course(int degree) {
         this.degree = degree;
-        nextCourses = new ArrayList<>();
+        next = new ArrayList<>();
     }
 }
 
@@ -21,6 +22,7 @@ public class Solution {
         }
         
         Course[] courses = new Course[numCourses];
+        
         for (int i = 0; i < numCourses; ++i) {
             courses[i] = new Course(0);
         }
@@ -28,37 +30,38 @@ public class Solution {
         for (int[] item: prerequisites) {
             int first = item[1];
             int second = item[0];
+            
             courses[second].degree++;
-            courses[first].nextCourses.add(second);
+            courses[first].next.add(second);
         }
         
-        int count = 0;
-        Queue<Integer> q = new LinkedList<>();
         int[] rst = new int[numCourses];
+        int ind = 0;
+        Queue<Integer> q = new LinkedList<>();
         
         for (int i = 0; i < numCourses; ++i) {
             if (courses[i].degree == 0) {
-                rst[count++] = i;
                 q.offer(i);
+                rst[ind++] = i;
             }
         }
         
         while (!q.isEmpty()) {
             int curt = q.poll();
-            for (int nextCourse: courses[curt].nextCourses) {
-                courses[nextCourse].degree--;
-                if (courses[nextCourse].degree == 0) {
-                    rst[count++] = nextCourse;
-                    q.offer(nextCourse);
+    
+            for (int item: courses[curt].next) {
+                courses[item].degree--;
+                if (courses[item].degree == 0) {
+                    q.offer(item);
+                    rst[ind++] = item;
                 }
             }
         }
         
-        if (count == numCourses) {
+        if (ind == numCourses) {
             return rst;
         }
         
         return new int[0];
-        
     }
 }
