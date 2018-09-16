@@ -1,3 +1,5 @@
+// 531. Six Degrees
+
 /**
  * Definition for Undirected graph.
  * class UndirectedGraphNode {
@@ -9,39 +11,44 @@
  *     }
  * };
  */
+
+
 public class Solution {
-    /**
-     * @param graph a list of Undirected graph node
-     * @param s, t two Undirected graph nodes
-     * @return an integer
+    /*
+     * @param graph: a list of Undirected graph node
+     * @param s: Undirected graph node
+     * @param t: Undirected graph nodes
+     * @return: an integer
      */
-    public int sixDegrees(List<UndirectedGraphNode> graph,
-                          UndirectedGraphNode s,
-                          UndirectedGraphNode t) {
-        // Write your code here
-        if (s == t) return 0;
+    public int sixDegrees(List<UndirectedGraphNode> graph, UndirectedGraphNode s, UndirectedGraphNode t) {
+        // write your code here
+        if (graph == null || graph.size() == 0 || s == null || t == null) {
+            return -1;
+        }
         
-        HashMap<Integer, UndirectedGraphNode> map = new HashMap<>();
-        for (UndirectedGraphNode n: graph) map.put(n.label, n);
+        int step = 0;
+        Queue<UndirectedGraphNode> q = new LinkedList<>();
+        Set<UndirectedGraphNode> visited = new HashSet<>();
         
-        Queue<UndirectedGraphNode> queue = new LinkedList<>();
-        queue.offer(s);
-        
-        HashSet<Integer> used = new HashSet<>();
-        int level = 1;
-        
-        while (!queue.isEmpty()) {
-            int size = queue.size();
-            for (int k = 0; k < size; ++k) {
-                UndirectedGraphNode curt = queue.poll();
-                used.add(curt.label);
-                for (UndirectedGraphNode next: map.get(curt.label).neighbors) {
-                    if (next == t) return level;
-                    if (!used.contains(next.label)) queue.offer(next);
+        q.offer(s);
+        visited.add(s);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                UndirectedGraphNode curt = q.poll();
+                if (curt.label == t.label) {
+                    return step;
+                }
+                
+                for (UndirectedGraphNode next: curt.neighbors) {
+                    if (!visited.contains(next)) {
+                        visited.add(next);
+                        q.offer(next);
+                    }
                 }
             }
             
-            level++;
+            step++;
         }
         
         return -1;
