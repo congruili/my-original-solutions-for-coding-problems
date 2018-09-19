@@ -24,12 +24,14 @@ public class BSTIterator {
     * @param root: The root of binary tree.
     */
     Stack<TreeNode> stack;
-    TreeNode curt;
-    
     public BSTIterator(TreeNode root) {
         // do intialization if necessary
         stack = new Stack<>();
-        curt = root;
+        
+        while (root != null) {
+            stack.push(root);
+            root = root.left;
+        }
     }
 
     /*
@@ -37,7 +39,7 @@ public class BSTIterator {
      */
     public boolean hasNext() {
         // write your code here
-        return (curt != null || !stack.isEmpty());
+        return !stack.isEmpty();
     }
 
     /*
@@ -45,13 +47,22 @@ public class BSTIterator {
      */
     public TreeNode next() {
         // write your code here
-        while (curt != null) {
-            stack.push(curt);
-            curt = curt.left;
+        TreeNode rst = stack.peek();
+        TreeNode node = rst;
+        
+        if (node.right == null) {
+            node = stack.pop();
+            while (!stack.isEmpty() && stack.peek().right == node) {
+                node = stack.pop();
+            }
+        } else {
+            node = node.right;
+            while (node != null) {
+                stack.push(node);
+                node = node.left;
+            }
         }
         
-        TreeNode rst = stack.pop();
-        curt = rst.right;
         return rst;
     }
 }

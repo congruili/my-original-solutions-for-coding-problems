@@ -22,15 +22,15 @@ public class Solution {
         return helper(root, Long.MIN_VALUE, Long.MAX_VALUE);
     }
     
-    private boolean helper(TreeNode root, Long lower, Long upper) {
-        if (root == null) {
+    private boolean helper(TreeNode curt, long lower, long upper) {
+        if (curt == null) {
             return true;
         }
         
-        if (root.val <= lower || root.val >= upper) {
+        if (lower >= curt.val || curt.val >= upper) {
             return false;
         }
         
-        return helper(root.left, lower, (long)root.val) && helper(root.right, (long)root.val, upper);
+        return helper(curt.left, lower, (long)curt.val) && helper(curt.right, (long)curt.val, upper);
     }
 }
