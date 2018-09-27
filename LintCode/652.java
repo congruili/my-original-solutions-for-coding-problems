@@ -20,7 +20,7 @@ public class Solution {
         }
         list.remove(list.size() - 1);
         
-        for (int i = curt; i <= (int)(Math.sqrt(n)); ++i) {
+        for (int i = curt; i <= n / i; ++i) {
             if (n % i == 0) {
                 list.add(i);
                 dfs(n / i, i, list, rst);
