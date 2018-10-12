@@ -6,18 +6,24 @@ public class Solution {
      * @param wordDict: A set of words.
      * @return: All possible sentences.
      */
-    Map<String, List<String>> memo = new HashMap<>();
      
+    Map<String, List<String>> map;
     public List<String> wordBreak(String s, Set<String> wordDict) {
         // write your code here
-        if (s == null || s.length() == 0) {
+        if (s == null || wordDict == null) {
             return new ArrayList<String>();
         }
         
-        if (memo.containsKey(s)) {
-            return memo.get(s);
-        }
+        map = new HashMap<>();
         
+        return dfs(s, wordDict);  
+    }
+    
+    private List<String> dfs(String s, Set<String> wordDict) {
+        if (map.containsKey(s)) {
+            return map.get(s);
+        }
+    
         List<String> rst = new ArrayList<>();
         
         if (wordDict.contains(s)) {
@@ -25,21 +31,19 @@ public class Solution {
         }
         
         for (int i = 1; i < s.length(); ++i) {
-            String curt = s.substring(0, i);
-            if (!wordDict.contains(curt)) {
+            String prefix = s.substring(0, i);
+            if (!wordDict.contains(prefix)) {
                 continue;
             }
             
-            String after = s.substring(i);
-            List<String> segs = wordBreak(after, wordDict);
-            
-            for (String seg: segs) {
-                rst.add(curt + " " + seg);
+            String left = s.substring(i);
+            List<String> cuts = dfs(left, wordDict);
+            for (String cut: cuts) {
+                rst.add(prefix + " " + cut);
             }
         }
         
-        memo.put(s, rst);
-        return rst;
+        map.put(s, rst);
+        return rst;   
     }
-
 }
