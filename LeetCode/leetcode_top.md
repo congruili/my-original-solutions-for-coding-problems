@@ -244,4 +244,178 @@ class Solution {
 }
 </pre>
 
-## 
+## 169 Majority Element
+<pre>
+class Solution {
+    public int majorityElement(int[] nums) {
+        int count = 0;
+        int major = 0;
+        for (int num: nums) {
+            if (count == 0) {
+                major = num;
+            }
+            
+            if (num == major) {
+                count ++;
+            } else {
+                count --;
+            }       
+        }
+        
+        return major;        
+    }
+}
+</pre>
+
+## 171 Excel Sheet Column Number
+<pre>
+class Solution {
+    public int titleToNumber(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int rst = 0;
+        char[] sc = s.toCharArray();
+        int len = sc.length;
+        int base = 1;
+        
+        for (int i = len - 1; i >= 0; --i) {
+            int curt = sc[i] - 'A' + 1;
+            rst += curt * base;
+            base *= 26;       
+        }
+        
+        return rst;        
+    }
+}
+</pre>
+
+## 172 Factorial Trailing Zeroes
+<pre>
+class Solution {
+    public int trailingZeroes(int n) {
+        if (n <= 0) {
+            return 0;
+        }
+        
+        int rst = 0;
+        
+        while (n > 0) {
+            rst += n / 5;
+            n /= 5;           
+        }
+        
+        return rst;        
+    }
+}
+</pre>
+
+## 179 Largest Number
+<pre>
+class Solution {
+    public String largestNumber(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        
+        int len = nums.length;
+        String[] strs = new String[len];
+        
+        for (int i = 0; i < len; ++i) {
+            strs[i] = nums[i] + "";
+        }
+        
+        Comparator<String> comp = new Comparator<String>() {
+            public int compare(String a, String b) {
+                return (b + a).compareTo(a + b);            
+            }        
+        };
+        
+        Arrays.sort(strs, comp);
+        
+        for (String s: strs) {
+            sb.append(s);
+        }
+        
+        while (sb.length() > 0) {
+            if (sb.charAt(0) == '0') {
+                sb.deleteCharAt(0);            
+            } else {
+                break;
+            }        
+        }
+        
+        if (sb.length() == 0) {
+            return "0";
+        }
+        
+        return sb.toString(); 
+    }
+}
+</pre>
+
+## 189 Rotate Array
+<pre>
+class Solution {
+    public void rotate(int[] nums, int k) {
+        if (nums == null || nums.length == 0) {
+            return;
+        }
+        
+        int len = nums.length;
+        k %= len;
+        if (k == 0) {
+            return;
+        }
+        
+        swap(nums, 0, len - k - 1);
+        swap(nums, len - k, len - 1);
+        swap(nums, 0, len - 1);
+    }
+    
+    private void swap(int[] nums, int i, int j) {
+        while (i < j) {
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
+            i++;
+            j--;        
+        }    
+    }
+}
+</pre>
+
+## 190 Reverse Bits
+<pre>
+public class Solution {
+    // you need treat n as an unsigned value
+    public int reverseBits(int n) {
+        int rst = 0;
+        for (int i = 0; i < 32; ++i) {
+            rst = (rst << 1);
+            rst += ((n >>> i) & 1);
+        }
+        
+        return rst;        
+    }
+}
+</pre>
+
+## 191 Number of 1 Bits
+<pre>
+public class Solution {
+    // you need to treat n as an unsigned value
+    public int hammingWeight(int n) {
+        int count = 0;
+        while (n != 0) {
+            count ++;
+            n = (n & (n - 1));        
+        }
+        
+        return count;        
+    }
+}
+</pre>
