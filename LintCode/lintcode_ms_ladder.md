@@ -482,3 +482,606 @@ public class Solution {
     }
 }
 </pre>
+
+## 433. Number of Islands (union find)
+<pre>
+class UnionFind {
+    int[] father;
+    int count;
+    
+    public UnionFind(int size) {
+        father = new int[size]; 
+        for (int i = 0; i < size; ++i) {
+            father[i] = i;
+        }
+    }
+    
+    private int find(int x) {
+        List<Integer> list = new ArrayList<>();
+        while (x != father[x]) {
+            list.add(x);
+            x = father[x];
+        }
+        
+        for (int i: list) {
+            father[i] = x;
+        } 
+        
+        return x;
+    }
+    
+    public void union(int a, int b) {
+        int root_a = find(a);
+        int root_b = find(b);
+        if (root_a != root_b) {
+            count--;
+            father[root_a] = root_b;        
+        }    
+    }
+    
+    public void setCount(int count) {
+        this.count = count;
+    }
+}
+
+public class Solution {
+    /**
+     * @param grid: a boolean 2D matrix
+     * @return: an integer
+     */
+    public int numIslands(boolean[][] grid) {
+        // write your code here
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        
+        int n = grid.length, m = grid[0].length;
+        
+        int count = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (grid[i][j]) {
+                    count++;
+                }           
+            }        
+        }
+        
+        UnionFind uf = new UnionFind(n * m);
+        uf.setCount(count);
+        
+        int[] di = {-1, 1, 0, 0};
+        int[] dj = {0, 0, -1, 1};
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (grid[i][j]) {
+                    for (int k = 0; k < 4; ++k) {
+                        int new_i = i + di[k];
+                        int new_j = j + dj[k];
+                        
+                        if (!valid(grid, new_i, new_j) || !grid[new_i][new_j]) {
+                            continue;
+                        }
+                        
+                        uf.union(i * m + j, new_i * m + new_j);
+                    }               
+                }            
+            }        
+        }
+        
+        return uf.count;  
+    }
+    
+    private boolean valid(boolean[][] grid, int i, int j) {
+        int n = grid.length, m = grid[0].length;        
+        return i >= 0 && i < n && j >= 0 && j < m;
+    }
+}
+</pre>
+
+## 423. Valid Parentheses
+<pre>
+public class Solution {
+    /**
+     * @param s: A string
+     * @return: whether the string is a valid parentheses
+     */
+    public boolean isValidParentheses(String s) {
+        // write your code here
+        if (s == null || s.length() == 0) {
+            return true;
+        }
+        
+        char[] sc = s.toCharArray();
+        Stack<Character> stack = new Stack<>();
+        
+        for (char c: sc) {
+            if (c == '(' || c == '[' || c == '{') {
+                stack.push(c);
+            } else if (stack.isEmpty()) {
+                return false;
+            } else {
+                char pre = stack.pop();
+                if ((pre == '(' && c == ')') || (pre == '[' && c == ']') || (pre == '{' && c == '}')) {
+                    continue;
+                } else {
+                    return false;                
+                }           
+            }       
+        }
+        
+        return stack.isEmpty();
+    }
+}
+</pre>
+
+## 64. Merge Sorted Array
+<pre>
+public class Solution {
+    /*
+     * @param A: sorted integer array A which has m elements, but size of A is m+n
+     * @param m: An integer
+     * @param B: sorted integer array B which has n elements
+     * @param n: An integer
+     * @return: nothing
+     */
+    public void mergeSortedArray(int[] A, int m, int[] B, int n) {
+        // write your code here
+        int ind = m + n - 1;
+        m --;
+        n --;
+        while (m >= 0 && n >= 0) {
+            if (A[m] >= B[n]) {
+                A[ind --] = A[m --];
+            } else {
+                A[ind --] = B[n --];
+            }
+        }
+        
+        while (n >= 0) {
+            A[ind --] = B[n --];
+        }
+    }
+}
+</pre>
+
+## 41. Maximum Subarray
+<pre>
+public class Solution {
+    /**
+     * @param nums: A list of integers
+     * @return: A integer indicate the sum of max subarray
+     */
+    public int maxSubArray(int[] nums) {
+        // write your code here
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int curtSum = 0;
+        int minSum = 0;
+        int rst = Integer.MIN_VALUE;
+        
+        for (int i = 0; i < nums.length; ++i) {
+            curtSum += nums[i];
+            rst = Math.max(rst, curtSum - minSum);
+            minSum = Math.min(minSum, curtSum);       
+        }
+        
+        return rst;
+    }
+}
+</pre>
+
+## 13. Implement strStr()
+<pre>
+public class Solution {
+    /**
+     * @param source: 
+     * @param target: 
+     * @return: return the index
+     */
+    public int strStr(String source, String target) {
+        // Write your code here
+        if (source == null || target == null) {
+            return -1;
+        }
+        
+        if (target.length() == 0) {
+            return 0;
+        }
+        
+        int lenS = source.length(), lenT = target.length();
+        
+        for (int i = 0; i <= lenS - lenT; ++i) {
+            if (source.charAt(i) == target.charAt(0)) {
+                int j = 0;
+                for (; j < target.length(); ++j) {
+                    if (source.charAt(i + j) != target.charAt(j)) {
+                        break;
+                    }                
+                } 
+                
+                if (j == target.length()) {
+                    return i;
+                }
+            }        
+        }
+        
+        return -1;
+    }
+}
+</pre>
+
+## 415. Valid Palindrome
+<pre>
+public class Solution {
+    /**
+     * @param s: A string
+     * @return: Whether the string is a valid palindrome
+     */
+    public boolean isPalindrome(String s) {
+        // write your code here
+        if (s == null) {
+            return false;
+        }
+        
+        if (s.length() < 2) {
+            return true;
+        }
+        
+        s = s.toLowerCase();
+        
+        int l = 0, r = s.length() - 1;
+        while (l < r) {
+            while (l < r && !isValid(s.charAt(l))) {
+                l ++;
+            }
+            
+            while (l < r && !isValid(s.charAt(r))) {
+                r --;
+            }
+            
+            if (l < r) {
+                if (s.charAt(l) == s.charAt(r)) {
+                    l ++;
+                    r --;
+                } else {
+                    return false;
+                }
+            }         
+        }
+        
+        return true;      
+        
+    }
+    
+    private boolean isValid(char c) {
+        return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z');
+    }
+}
+</pre>
+
+# 1-Medium
+
+## 1106. Maximum Binary Tree
+<pre>
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param nums: an array
+     * @return: the maximum tree
+     */
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+        // Write your code here
+        if (nums == null || nums.length == 0) {
+            return null;
+        }
+        
+        int ind = 0;
+        int rootVal = nums[0];
+        
+        for (int i = 1; i < nums.length; ++i) {
+            if (nums[i] > rootVal) {
+                rootVal = nums[i];
+                ind = i;
+            }
+        }
+        
+        TreeNode root = new TreeNode(rootVal);
+        
+        root.left = constructMaximumBinaryTree(Arrays.copyOfRange(nums, 0, ind));
+        root.right = constructMaximumBinaryTree(Arrays.copyOfRange(nums, ind + 1, nums.length));
+
+        return root;
+  
+    }
+}
+</pre>
+
+## 927. Reverse Words in a String II
+<pre>
+public class Solution {
+    /**
+     * @param str: a string
+     * @return: return a string
+     */
+    public char[] reverseWords(char[] str) {
+        // write your code here
+        if (str == null || str.length == 0) {
+            return str;
+        }
+        
+        int left = 0, right = 0;
+        int len = str.length;
+        swap(str, 0, len - 1);
+        
+        while (left < len) {
+            while (right < len && str[right] != ' ') {
+                right++;            
+            }
+            
+            swap(str, left, right - 1);
+            left = right + 1;
+            right = left;            
+        }
+        
+        return str;
+    }
+    
+    private void swap(char[] str, int i, int j) {
+        while (i < j) {
+            char tmp = str[i];
+            str[i] = str[j];
+            str[j] = tmp;  
+            i ++;
+            j --;
+        }    
+    }
+}
+</pre>
+
+## 419. Roman to Integer
+<pre>
+public class Solution {
+    /**
+     * @param s: Roman representation
+     * @return: an integer
+     */
+    public int romanToInt(String s) {
+        // write your code here
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('I', 1);
+        map.put('V', 5);
+        map.put('X', 10);
+        map.put('L', 50);
+        map.put('C', 100);
+        map.put('D', 500);
+        map.put('M', 1000);
+        
+        char[] sc = s.toCharArray();
+        int rst = 0;
+        int len = sc.length;
+        rst += map.get(sc[len - 1]);
+        
+        for (int i = len - 2; i >= 0; --i) {
+            if (map.get(sc[i]) < map.get(sc[i + 1])) {
+                rst -= map.get(sc[i]);
+            } else {
+                rst += map.get(sc[i]);
+            }
+        }
+        
+        return rst;
+    }
+}
+</pre>
+
+## 200. Longest Palindromic Substring
+<pre>
+public class Solution {
+    /**
+     * @param s: input string
+     * @return: the longest palindromic substring
+     */
+    public String longestPalindrome(String s) {
+        // write your code here
+        if (s == null || s.length() == 0) {
+            return s;
+        }
+        
+        int len = s.length();
+        boolean[][] valid = new boolean[len][len];
+        
+        int maxLen = 1;
+        String rst = s.substring(0, 1);
+        for (int i = 0; i < len; ++i) {
+            valid[i][i] = true;
+        }
+        
+        for (int i = 0; i < len - 1; ++i) {
+            if (s.charAt(i) == s.charAt(i + 1)) {
+                valid[i][i + 1] = true;
+                rst = s.substring(i, i + 2);
+                maxLen = 2;
+            }        
+        }
+        
+        for (int i = len - 2; i >= 0; --i) {
+            for (int j = i + 1; j < len; ++j) {
+                if (valid[i + 1][j - 1] && s.charAt(i) == s.charAt(j)) {
+                    valid[i][j] = true;
+                    if (j - i + 1 > maxLen) {
+                        maxLen = j - i + 1;
+                        rst = s.substring(i, j + 1);                    
+                    }                
+                }
+            }
+        }
+        
+        return rst;        
+  
+    }
+}
+</pre>
+
+## 380. Intersection of Two Linked Lists
+<pre>
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param headA: the first list
+     * @param headB: the second list
+     * @return: a ListNode
+     */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        // write your code here
+        if (headA == null || headB == null) {
+            return null;
+        }
+        
+        ListNode curt = headA;
+        int lenA = 0;
+        while (curt != null) {
+            lenA ++;
+            curt = curt.next;
+        }
+        
+        curt = headB;        
+        int lenB = 0;
+        while (curt != null) {
+            lenB ++;
+            curt = curt.next;
+        }
+        
+        while (lenA > lenB) {
+            headA = headA.next;
+            lenA --;
+        }
+        
+        while (lenA < lenB) {
+            headB = headB.next;
+            lenB --;
+        }
+        
+        while (headA != headB) {
+            headA = headA.next;
+            headB = headB.next;        
+        }
+        
+        return headA;        
+    }
+}
+</pre>
+
+## 149. Best Time to Buy and Sell Stock
+<pre>
+public class Solution {
+    /**
+     * @param prices: Given an integer array
+     * @return: Maximum profit
+     */
+    public int maxProfit(int[] prices) {
+        // write your code here
+        if (prices == null || prices.length == 0) {
+            return 0;
+        }
+        
+        int rst = 0;
+        int minVal = prices[0];
+        
+        for (int i = 1; i < prices.length; ++i) {
+            int diff = prices[i] - minVal;
+            if (diff > rst) {
+                rst = diff;
+            }
+            
+            minVal = Math.min(minVal, prices[i]);        
+        }
+        
+        return rst;       
+    }
+}
+</pre>
+
+## 123. Word Search
+<pre>
+public class Solution {
+    /**
+     * @param board: A list of lists of character
+     * @param word: A string
+     * @return: A boolean
+     */
+    public boolean exist(char[][] board, String word) {
+        // write your code here
+        if (board == null || board.length == 0 || board[0].length == 0) {
+            return false;
+        }
+        
+        int n = board.length, m = board[0].length;
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (board[i][j] == word.charAt(0)) {
+                    if (dfs(board, i, j, word, 0)) {
+                        return true;
+                    }                
+                }           
+            }        
+        }
+        
+        return false;        
+    }
+    
+    private boolean dfs(char[][] board, int i, int j, String word, int ind) {
+        if (ind == word.length()) {
+            return true;
+        }
+        
+        int n = board.length, m = board[0].length;
+        
+        if (i < 0 || i >= n || j < 0 || j >= m) {
+            return false;
+        }
+        
+        if (board[i][j] != word.charAt(ind)) {
+            return false;
+        }
+        
+        char tmp = board[i][j];
+        
+        board[i][j] = '#';
+        boolean isValid = dfs(board, i + 1, j, word, ind + 1) || dfs(board, i - 1, j, word, ind + 1) || dfs(board, i, j + 1, word, ind + 1) || dfs(board, i, j - 1, word, ind + 1);
+        
+        board[i][j] = tmp;
+        return isValid;       
+    }    
+}
+</pre>
+

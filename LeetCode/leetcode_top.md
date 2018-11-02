@@ -419,3 +419,185 @@ public class Solution {
     }
 }
 </pre>
+
+## 198 House Robber
+<pre>
+class Solution {
+    public int rob(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int len = nums.length;
+        
+        int[] rst = new int[len + 1];
+        rst[0] = 0, rst[1] = nums[0];
+        
+        for (int i = 2; i <= len; ++i) {
+            rst[i] = Math.max(rst[i - 1], rst[i - 2] + nums[i - 1]);        
+        }
+        
+        return rst[len];        
+    }
+}
+</pre> 
+
+## 200 Number of Islands
+<pre>
+class UnionFind {
+    int size;
+    int[] father;
+    int count;
+    
+    public UnionFind(int size) {
+        father = new int[size];
+        
+        for (int i = 0; i < size; ++i) {
+            father[i] = i;
+        }    
+    }
+    
+    public void set_count(int count) {
+        this.count = count;
+    }
+    
+    public int find(int x) {
+        List<Integer> list = new ArrayList<>();
+        
+        while (father[x] != x) {
+            list.add(x);
+            x = father[x];            
+        }
+        
+        for (int i: list) {
+            father[i] = x;
+        }    
+        
+        return x;
+    }
+    
+    public void union(int a, int b) {
+        int root_a = find(a);
+        int root_b = find(b);
+        if (root_a != root_b) {
+            count --;
+            father[root_a] = root_b;
+        }
+    }
+    
+    public int query() {
+        return count;
+    }
+
+}
+
+
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        
+        int n = grid.length, m = grid[0].length;
+        UnionFind uf = new UnionFind(n * m);
+        
+        int count = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (grid[i][j] == '1') {
+                    count ++;
+                }            
+            }        
+        }
+        
+        uf.set_count(count);
+        
+        int[] dx = {-1, 1, 0, 0};
+        int[] dy = {0, 0, -1, 1};
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (grid[i][j] == '0') {
+                    continue;
+                }
+                
+                for (int k = 0; k < 4; ++k) {
+                    int new_x = i + dx[k];
+                    int new_y = j + dy[k];
+                    
+                    if (isValid(grid, new_x, new_y) && grid[new_x][new_y] == '1' && uf.find(new_x * m + new_y) != i * m + j) {
+                        uf.union(new_x * m + new_y, i * m + j);                    
+                    }               
+                }
+            }        
+        }
+        
+        return uf.query();        
+    }
+    
+    private boolean isValid(char[][] grid, int i, int j) {
+        int n = grid.length, m = grid[0].length;
+        return i >= 0 && i < n && j >= 0 && j < m;      
+    }
+}
+</pre>  
+
+## 202 Happy Number
+<pre>
+class Solution {
+    public boolean isHappy(int n) {
+        if (n <= 0) {
+            return false;
+        }
+        
+        Set<Integer> set = new HashSet<>();
+        
+        while (true) {
+            int curt = 0;
+            while (n != 0) {
+                int i = n % 10;
+                curt += i * i;
+                n /= 10;            
+            }
+            
+            if (curt == 1) {
+                return true;
+            }            
+            
+            if (set.contains(curt)) {
+                break;
+            }
+            
+            set.add(curt);            
+            n = curt;        
+        }
+        
+        return false;        
+    }
+}
+</pre> 
+
+## 204 Count Primes
+<pre>
+class Solution {
+    public int countPrimes(int n) {
+        if (n < 2) {
+            return 0;
+        }
+        
+        boolean[] notPrime = new boolean[n];
+        int rst = 0;
+        for (int i = 2; i < n; ++i) {
+            if (!notPrime[i]) {
+                rst ++;
+                for (int j = 2; j * i < n; ++j) {
+                    notPrime[i * j] = true;                
+                }
+            }        
+        }
+        
+        return rst;       
+    }
+}
+</pre>
+
