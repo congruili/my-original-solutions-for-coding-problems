@@ -601,3 +601,163 @@ class Solution {
 }
 </pre>
 
+## 230 Kth Smallest Element in a BST
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int kthSmallest(TreeNode root, int k) {
+        int left = numOfNodes(root.left);
+        if (left == k - 1) {
+            return root.val;
+        } else if (left >= k) {
+            return kthSmallest(root.left, k);
+        } else {
+            return kthSmallest(root.right, k - left - 1);
+        }
+    }
+    
+    private int numOfNodes(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        return numOfNodes(root.left) + numOfNodes(root.right) + 1;    
+    }
+}
+</pre>
+
+##234 Palindrome Linked List (O(n) time and O(1) space)
+<pre>
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) {
+            return true;
+        }
+        
+        ListNode dummy = new ListNode(0);
+        
+        dummy.next = head;
+        
+        ListNode slow = dummy;
+        ListNode fast = dummy;
+        
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        
+        ListNode second = slow.next;
+        slow.next = null;
+        second = reverse(second);
+        
+        while (second != null) {
+            if (head.val != second.val) {
+                return false;
+            }
+            
+            head = head.next;
+            second = second.next;
+        }
+        
+        return true;               
+    }
+    
+    private ListNode reverse(ListNode head) {
+        ListNode pre = null;
+        while (head != null) {
+            ListNode tmp = head.next;
+            head.next = pre;
+            pre = head;
+            head = tmp;        
+        }
+        
+        return pre;    
+    }
+}
+</pre>
+
+## 236 Lowest Common Ancestor of a Binary Tree
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return null;
+        }
+        
+        if (root == p || root == q) {
+            return root;
+        }
+        
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        
+        if (left != null && right != null) {
+            return root;
+        }
+        
+        if (left == null) {
+            return right;
+        }
+        
+        return left;        
+    }
+}
+</pre>
+
+## 238 Product of Array Except Self
+<pre>
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        if (nums == null || nums.length < 2) {
+            return nums;
+        }
+        
+        int len = nums.length;
+        
+        int[] rst = new int[len];
+        rst[0] = nums[0];
+        
+        for (int i = 1; i < len; ++i) {
+            rst[i] = rst[i - 1] * nums[i];
+        }
+        
+        rst[len - 1] = rst[len - 2];
+        int curt = nums[len - 1];
+        
+        for (int i = len - 2; i > 0; --i) {
+            rst[i] = rst[i - 1] * curt;
+            curt = curt * nums[i];
+        }
+        
+        rst[0] = curt;
+        
+        return rst;   
+    }
+}
+</pre>
+
