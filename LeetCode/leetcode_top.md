@@ -634,7 +634,7 @@ class Solution {
 }
 </pre>
 
-##234 Palindrome Linked List (O(n) time and O(1) space)
+## 234 Palindrome Linked List (O(n) time and O(1) space)
 <pre>
 /**
  * Definition for singly-linked list.
@@ -757,6 +757,362 @@ class Solution {
         rst[0] = curt;
         
         return rst;   
+    }
+}
+</pre>
+
+## 239 Sliding Window Maximum
+<pre>
+class Solution {
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (nums == null || nums.length == 0 || k == 0) {
+            return new int[0];
+        }
+        
+        int len = nums.length;
+        
+        int[] rst = new int[len - k + 1];
+    
+        Deque<Integer> q = new ArrayDeque<>();
+        
+        for (int i = 0; i < k; ++i) {
+            while (!q.isEmpty() && nums[q.peekLast()] < nums[i]) {
+                q.pollLast();
+            } 
+            
+            q.offer(i);
+        }
+        
+        rst[0] = nums[q.peekFirst()];
+        
+        for (int i = k; i < len; ++i) {
+            while (!q.isEmpty() && q.peekFirst() <= i - k) {
+                q.pollFirst();
+            }
+            
+            while (!q.isEmpty() && nums[q.peekLast()] < nums[i]) {
+                q.pollLast();
+            } 
+            
+            q.offer(i);
+            
+            rst[i - k + 1] = nums[q.peekFirst()];
+        }
+        
+        return rst;  
+    }
+}
+</pre>
+
+## 240 Search a 2D Matrix II
+<pre>
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return false;
+        }
+        
+        int n = matrix.length, m = matrix[0].length;
+        
+        int row = 0, col = m - 1;
+        while (row < n && col >= 0) {
+            if (matrix[row][col] == target) {
+                return true;
+            } else if (matrix[row][col] < target) {
+                row ++;
+            } else {
+                col --;
+            }       
+        }
+        
+        return false;        
+    }
+}
+</pre>
+
+## 253 Meeting Rooms II
+<pre>
+class Point {
+    int flag;
+    int time;
+    public Point(int flag, int time) {
+        this.flag = flag;
+        this.time = time;    
+    }
+}
+
+/**
+ * Definition for an interval.
+ * public class Interval {
+ *     int start;
+ *     int end;
+ *     Interval() { start = 0; end = 0; }
+ *     Interval(int s, int e) { start = s; end = e; }
+ * }
+ */
+class Solution {
+    public int minMeetingRooms(Interval[] intervals) {
+        if (intervals == null || intervals.length == 0) {
+            return 0;
+        }
+        
+        Comparator<Point> comp = new Comparator<Point>() {
+            public int compare(Point a, Point b) {
+                if (a.time != b.time) {
+                    return a.time - b.time;
+                }
+                
+                return a.flag - b.flag;            
+            }        
+        };
+        
+        List<Point> times = new ArrayList<>();
+        
+        for (Interval i: intervals) {
+            times.add(new Point(1, i.start));
+            times.add(new Point(0, i.end));
+        }
+        
+        Collections.sort(times, comp);        
+        
+        int count = 0;
+        int rst = 0;
+        
+        for (Point t: times) {
+            if (t.flag == 1) {
+                count ++;
+            } else {
+                count --;
+            }
+            
+            rst = Math.max(rst, count);
+        }
+        
+        return rst;                
+    }
+}
+</pre>
+
+## 268 Missing Number
+<pre>
+class Solution {
+    public int missingNumber(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        
+        int n = nums.length;
+        
+        for (int i = 0; i < n; ++i) {  
+            while (nums[i] != n && nums[i] != i) {
+                swap(nums, i, nums[i]);            
+            }        
+        }
+        
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] != i) {
+                return i;
+            }
+        }
+        
+        return n;        
+    }
+    
+    private void swap(int[] nums, int i, int j) {
+        int tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;   
+    }
+}
+</pre>
+
+## 269 Alien Dictionary
+<pre>
+class Solution {
+    public String alienOrder(String[] words) {
+        if (words == null || words.length == 0) {
+            return "";
+        }
+        
+        Map<Character, Integer> degree = new HashMap<>();
+        Map<Character, Set<Character>> map = new HashMap<>();
+        
+        int len = words.length;
+        
+        for (String w: words) {
+            for (char c: w.toCharArray()) {
+                degree.put(c, 0);
+            }        
+        }
+        
+        for (int i = 0; i < len - 1; ++i) {
+            String one = words[i];
+            String two = words[i + 1];
+            
+            int limit = Math.min(one.length(), two.length());
+            
+            for (int j = 0; j < limit; ++j) {
+                char c1 = one.charAt(j);
+                char c2 = two.charAt(j); 
+            
+                if (c1 != c2) {
+                    if (!map.containsKey(c1)) {
+                        map.put(c1, new HashSet<Character>());                    
+                    }
+                    
+                    map.get(c1).add(c2);  
+                    break;
+                }
+            }        
+        }
+        
+        for (char c: map.keySet()) {
+            for (char next: map.get(c)) {
+                degree.put(next, degree.get(next) + 1);            
+            }        
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        
+        Queue<Character> q = new LinkedList<>();
+        for (char c: degree.keySet()) {
+            if (degree.get(c) == 0) {
+                q.offer(c);
+            }        
+        }
+        
+        while (!q.isEmpty()) {
+            char curt = q.poll();
+            sb.append(curt);
+            if (!map.containsKey(curt)) {
+                continue;
+            }
+            
+            for (char next: map.get(curt)) {
+                degree.put(next, degree.get(next) - 1);
+                if (degree.get(next) == 0) {
+                    q.offer(next);
+                }            
+            }        
+        }
+        
+        if (degree.size() == sb.length()) {
+            return sb.toString();
+        }
+        
+        return "";   
+    }
+}
+</pre>
+
+## 277 Find the Celebrity
+<pre>
+/* The knows API is defined in the parent class Relation.
+      boolean knows(int a, int b); */
+
+public class Solution extends Relation {
+    public int findCelebrity(int n) {
+        int cand = 0;
+        for (int i = 1; i < n; ++i) {
+            if (!knows(i, cand)) {
+                cand = i;
+            }        
+        }
+        
+        for (int i = 0; i < n; ++i) {
+            if (i == cand) {
+                continue;
+            }
+            
+            if (knows(cand, i) || !knows(i, cand)) {
+                return -1;
+            }        
+        }
+        
+        return cand;        
+    }
+}
+</pre>
+
+## 279 Perfect Squares
+<pre>
+class Solution {
+    public int numSquares(int n) {
+        int[] dp = new int[n + 1];
+        
+        dp[0] = 0;
+        for (int i = 1; i <= n; ++i) {
+            int curt = Integer.MAX_VALUE;
+            int j = 1;
+            while (i - j * j >= 0) {
+                curt = Math.min(curt, dp[i - j * j] + 1);
+                j ++;
+            }
+            
+            dp[i] = curt;        
+        }
+        
+        return dp[n];        
+    }
+}
+</pre>
+
+## 285 Inorder Successor in BST (non-recursion)
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        TreeNode succ = null;
+        
+        while (root != null) {
+            if (p.val < root.val) {
+                succ = root;
+                root = root.left;
+            } else {
+                root = root.right;
+            }        
+        }
+        
+        return succ;        
+    }
+}
+</pre>
+
+## 285 Inorder Successor in BST (recursion)
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+        if (root == null || p == null) {
+            return null;
+        }
+        
+        if (root.val <= p.val) {
+            return inorderSuccessor(root.right, p);
+        }
+        
+        TreeNode left = inorderSuccessor(root.left, p);
+        if (left == null) {
+            return root;
+        }
+        
+        return left;        
     }
 }
 </pre>
