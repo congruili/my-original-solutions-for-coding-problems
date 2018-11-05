@@ -1117,3 +1117,243 @@ class Solution {
 }
 </pre>
 
+## 287 Find the Duplicate Number
+<pre>
+class Solution {
+    public int findDuplicate(int[] nums) {
+        int n = nums.length - 1;
+        int begin = 1, end = n;
+        while (begin + 1 < end) {
+            int mid = begin + (end - begin) / 2;
+            
+            if (count(nums, mid) > mid) {
+                end = mid;
+            } else {
+                begin = mid;
+            }       
+        }
+        
+        if (count(nums, begin) > begin) {
+            return begin;
+        }
+        
+        return end;        
+    }
+    
+    private int count(int[] nums, int cand) {
+        int rst = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            if (nums[i] <= cand) {
+                rst ++;
+            }
+        }
+        
+        return rst;    
+    }
+}
+</pre>
+
+## 289 Game of Life
+<pre>
+class Solution {
+    public void gameOfLife(int[][] board) {
+        if (board == null || board.length == 0 || board[0].length == 0) {
+            return;
+        }
+        
+        int n = board.length, m = board[0].length;
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                int count = countLive(board, i, j);
+                if ((board[i][j] & 1) == 1) {
+                    if (count == 2 || count == 3) {
+                        board[i][j] += 2;
+                    }               
+                } else {
+                    if (count == 3) {
+                        board[i][j] += 2;
+                    }                
+                }
+            }       
+        }
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                board[i][j] = (board[i][j] >> 1);
+            }       
+        }
+    
+        
+    }
+    
+    private int countLive(int[][] board, int row, int col) {
+        int n = board.length, m = board[0].length;
+        int count = 0;
+        
+        for (int i = Math.max(row - 1, 0); i <= Math.min(row + 1, n - 1); ++i) {
+            for (int j = Math.max(col - 1, 0); j <= Math.min(col + 1, m - 1); ++j) {
+                if (i == row && j == col) {
+                    continue;
+                }
+                
+                if ((board[i][j] & 1) == 1) {
+                    count ++;
+                }            
+            }        
+        } 
+        
+        return count;    
+    }
+}
+</pre>
+
+## 295 Find Median from Data Stream
+<pre>
+class MedianFinder {
+
+    /** initialize your data structure here. */
+    Queue<Integer> one;    
+    Queue<Integer> two;    
+    
+    public MedianFinder() {
+        one = new PriorityQueue<>(Collections.reverseOrder());
+        two = new PriorityQueue<>();         
+    }
+    
+    public void addNum(int num) {
+        one.offer(num);
+        two.offer(one.poll());
+        
+        if (two.size() > one.size()) {
+            one.offer(two.poll());
+        }       
+    }
+    
+    public double findMedian() {
+        if (one.size() > two.size()) {
+            return (double)(one.peek());
+        }
+        
+        return (one.peek() + two.peek()) / 2.0;       
+    }
+}
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
+</pre>
+
+## 297 Serialize and Deserialize Binary Tree
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if (root == null) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        Queue<TreeNode> q = new LinkedList<>();
+        
+        q.offer(root);
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                TreeNode curt = q.poll();
+                if (curt != null) {
+                    sb.append(curt.val).append(',');
+                    q.offer(curt.left);
+                    q.offer(curt.right);                
+                } else {
+                    sb.append("#,");
+                }            
+            }        
+        }
+        
+        sb.deleteCharAt(sb.length() - 1);
+        
+        return sb.toString();        
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if (data.length() == 0) {
+            return null;
+        }
+        
+        String[] strs = data.split(",");
+        
+        int ind = 0;
+        Queue<TreeNode> q = new LinkedList<>();
+        TreeNode root = new TreeNode(Integer.parseInt(strs[ind ++]));
+        
+        q.offer(root);
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                TreeNode curt = q.poll();
+                if (strs[ind].equals("#")) {
+                    curt.left = null;                    
+                } else {
+                    curt.left = new TreeNode(Integer.parseInt(strs[ind]));
+                    q.offer(curt.left);                
+                }                
+                ind ++;
+                
+                if (strs[ind].equals("#")) {
+                    curt.right = null;                    
+                } else {
+                    curt.right = new TreeNode(Integer.parseInt(strs[ind]));
+                    q.offer(curt.right);                
+                }                
+                ind ++;
+            }        
+        }
+        
+        return root;
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+</pre>
+
+## 322 Coin Change
+<pre>
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int n = coins.length;
+        int[] dp = new int[amount + 1];
+        
+        for (int i = 1; i <= amount; ++i) {
+            dp[i] = -1;
+            for (int j = 0; j < n; ++j) {
+                if (i - coins[j] >= 0 && dp[i - coins[j]] != -1) {
+                    if (dp[i] == -1 || dp[i] > dp[i - coins[j]] + 1) {
+                        dp[i] = dp[i - coins[j]] + 1;
+                    }                                    
+                }           
+            }        
+        }
+        
+        return dp[amount];        
+    }
+}
+</pre>
+
