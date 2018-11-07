@@ -1357,3 +1357,220 @@ class Solution {
 }
 </pre>
 
+## 329 Longest Increasing Path in a Matrix
+<pre>
+class Solution {
+    public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        
+        int n = matrix.length, m = matrix[0].length;
+        
+        int[][] rst = new int[n][m];
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (rst[i][j] == 0) {
+                    dfs(rst, i, j, matrix);                   
+                }            
+            }       
+        }
+        
+        int maxLen = 0;
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                maxLen = Math.max(maxLen, rst[i][j]);
+            }        
+        }
+        
+        return maxLen;
+    }
+    
+    private void dfs(int[][] rst, int i, int j, int[][] matrix) {
+        int n = matrix.length, m = matrix[0].length;
+        if (!isValid(rst, i, j)) {
+            return;
+        }
+        
+        if (rst[i][j] > 0) {
+            return;
+        }
+        
+        int[] di = {-1, 1, 0, 0};
+        int[] dj = {0, 0, -1, 1};
+        
+        rst[i][j] = 1;
+        
+        for (int k = 0; k < 4; ++k) {
+            int new_i = di[k] + i;
+            int new_j = dj[k] + j;
+            
+            if (!isValid(rst, new_i, new_j)) {
+                continue;
+            }
+            
+            if (matrix[new_i][new_j] < matrix[i][j]) {
+                if (rst[new_i][new_j] == 0) {
+                    dfs(rst, new_i, new_j, matrix);
+                }               
+                
+                rst[i][j] = Math.max(rst[i][j], rst[new_i][new_j] + 1);            
+            }       
+        }
+    }
+    
+    private boolean isValid(int[][] rst, int i, int j) {
+        int n = rst.length, m = rst[0].length;
+        return i >= 0 && i < n && j >= 0 && j < m;
+    }
+}
+</pre>
+
+## 340 Longest Substring with At Most K Distinct Characters
+<pre>
+class Solution {
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        if (s == null || s.length() == 0 || k == 0) {
+            return 0;
+        }
+        
+        int maxLen = 0;
+        int[] hash = new int[256];
+        char[] sc = s.toCharArray();
+        int count = 0;
+        int left = 0;
+        
+        for (int i = 0; i < sc.length; ++i) {
+            char c = sc[i];
+            hash[c] ++;
+            if (hash[c] == 1) {
+                count ++;
+            }
+            
+            while (count > k) {
+                char d = sc[left];
+                hash[d] --;
+                if (hash[d] == 0) {
+                    count --;
+                }
+                left ++;            
+            }
+            
+            maxLen = Math.max(maxLen, i - left + 1);        
+        }
+        
+        return maxLen;      
+    }
+}
+</pre>
+
+## 341 Flatten Nested List Iterator
+<pre>
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * public interface NestedInteger {
+ *
+ *     // @return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // Return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Return null if this NestedInteger holds a single integer
+ *     public List<NestedInteger> getList();
+ * }
+ */
+public class NestedIterator implements Iterator<Integer> {
+    Stack<NestedInteger> stack;
+
+    public NestedIterator(List<NestedInteger> nestedList) {
+        stack = new Stack<>();
+        for (int i = nestedList.size() - 1; i >= 0; --i) {
+            stack.push(nestedList.get(i));        
+        }        
+    }
+
+    @Override
+    public Integer next() {
+        if (!hasNext()) {
+            return null;
+        }
+        
+        return stack.pop().getInteger();      
+    }
+
+    @Override
+    public boolean hasNext() {
+        while (!stack.isEmpty() && !stack.peek().isInteger()) {
+            List<NestedInteger> list = stack.pop().getList();
+            
+            for (int i = list.size() - 1; i >= 0; --i) {
+                stack.push(list.get(i));            
+            }        
+        }
+        
+        return !stack.isEmpty();        
+    }
+}
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i = new NestedIterator(nestedList);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
+</pre>
+
+## 378 Kth Smallest Element in a Sorted Matrix
+<pre>
+class Point {
+    int val, row, col;
+    public Point(int val, int row, int col) {
+        this.val = val;
+        this.row = row;
+        this.col = col;    
+    }
+}
+
+class Solution {
+    public int kthSmallest(int[][] matrix, int k) {
+        int n = matrix.length, m = matrix[0].length;
+        
+        boolean[][] used = new boolean[n][m];
+        
+        Point p = new Point(matrix[0][0], 0, 0);
+        Comparator<Point> comp = new Comparator<Point>() {
+            public int compare(Point a, Point b) {
+                return a.val - b.val;            
+            }        
+        };
+        
+        Queue<Point> q = new PriorityQueue<>(k, comp);
+        q.offer(p);
+        used[p.row][p.col] = true;
+        int count = 1;
+        
+        while(count < k) {
+            Point curt = q.poll();
+            if (curt.row + 1 < n && !used[curt.row + 1][curt.col]) {
+                q.offer(new Point(matrix[curt.row + 1][curt.col], curt.row + 1, curt.col));
+                used[curt.row + 1][curt.col] = true;
+            }
+            
+            if (curt.col + 1 < m && !used[curt.row][curt.col + 1]) {
+                q.offer(new Point(matrix[curt.row][curt.col + 1], curt.row, curt.col + 1));
+                used[curt.row][curt.col + 1] = true;
+            }
+            
+            count ++;       
+        }
+        
+        return q.peek().val;       
+    }
+}
+</pre>
+
