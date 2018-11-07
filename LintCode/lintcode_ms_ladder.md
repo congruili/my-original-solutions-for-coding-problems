@@ -1085,3 +1085,632 @@ public class Solution {
 }
 </pre>
 
+## 102. Linked List Cycle
+<pre>
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: The first node of linked list.
+     * @return: True if it has a cycle, or false
+     */
+    public boolean hasCycle(ListNode head) {
+        // write your code here
+        if (head == null || head.next == null) {
+            return false;
+        }
+        
+        ListNode slow = head;
+        ListNode fast = head.next;
+        
+        while (fast != null && fast.next != null) {
+            if (slow == fast) {
+                return true;
+            }
+            
+            slow = slow.next;
+            fast = fast.next.next;        
+        }
+        
+        return false;
+    }
+}
+</pre>
+
+## 57. 3Sum
+<pre>
+public class Solution {
+    /**
+     * @param numbers: Give an array numbers of n integer
+     * @return: Find all unique triplets in the array which gives the sum of zero.
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        // write your code here
+        List<List<Integer>> rst = new ArrayList<>();
+        if (nums == null || nums.length < 3) {
+            return rst;
+        }
+        
+        int len = nums.length;
+        Arrays.sort(nums);
+        
+        for (int i = 0; i < len - 2; ++i) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            
+            int left = i + 1, right = len - 1;
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum == 0) {
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    rst.add(list);
+                    left ++;
+                    right --;
+                    
+                    while (left < right && nums[left] == nums[left - 1]) {
+                        left ++;
+                    } 
+                    
+                    while (left < right && nums[right] == nums[right + 1]) {
+                        right --;
+                    }               
+                } else if (sum > 0) {
+                    right --;
+                } else {
+                    left ++;
+                }         
+            }
+        }
+        
+        return rst;
+    }
+}
+</pre>
+
+## 7. Serialize and Deserialize Binary Tree
+<pre>
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+
+public class Solution {
+    /**
+     * This method will be invoked first, you should design your own algorithm 
+     * to serialize a binary tree which denote by a root node to a string which
+     * can be easily deserialized by your own "deserialize" method later.
+     */
+    public String serialize(TreeNode root) {
+        // write your code here
+        if (root == null) {
+            return "";
+        }
+        
+        StringBuilder sb = new StringBuilder();
+        Queue<TreeNode> q = new LinkedList<>();
+        q.offer(root);
+        
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int i = 0; i < size; ++i) {
+                TreeNode curt = q.poll();
+                if (curt == null) {
+                    sb.append("#,");
+                    continue;                    
+                }
+                
+                sb.append(curt.val + ",");
+                q.offer(curt.left);
+                q.offer(curt.right);           
+            }       
+        }
+        
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();       
+    }
+
+    /**
+     * This method will be invoked second, the argument data is what exactly
+     * you serialized at method "serialize", that means the data is not given by
+     * system, it's given by your own serialize method. So the format of data is
+     * designed by yourself, and deserialize it here as you serialize it in 
+     * "serialize" method.
+     */
+    public TreeNode deserialize(String data) {
+        // write your code here
+        if (data.length() == 0) {
+            return null;
+        }
+        
+        String[] strs = data.split(",");
+        
+        int ind = 0;
+        Queue<TreeNode> q = new LinkedList<>();
+        TreeNode root = new TreeNode(Integer.parseInt(strs[0]));
+        q.offer(root);
+        ind ++;
+        
+        while (ind < strs.length) {
+            TreeNode curt = q.poll();
+            if (strs[ind].equals("#")) {
+                curt.left = null;            
+            } else {
+                TreeNode left = new TreeNode(Integer.parseInt(strs[ind]));
+                curt.left = left;
+                q.offer(left);          
+            }
+            
+            ind ++;
+            
+            if (strs[ind].equals("#")) {
+                curt.right = null;            
+            } else {
+                TreeNode right = new TreeNode(Integer.parseInt(strs[ind]));
+                curt.right = right;
+                q.offer(right);          
+            }
+            
+            ind ++;        
+        }
+        
+        return root;    
+    }
+}
+</pre>
+
+## 512. Decode Ways
+<pre>
+public class Solution {
+    /**
+     * @param s: a string,  encoded message
+     * @return: an integer, the number of ways decoding
+     */
+    public int numDecodings(String s) {
+        // write your code here
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        char[] sc = s.toCharArray();
+        int len = sc.length;
+        
+        int[] dp = new int[sc.length + 1];
+        dp[0] = 1;
+        
+        for (int i = 0; i < len; ++i) {
+            if (sc[i] != '0') {
+                dp[i + 1] += dp[i];
+            }
+            
+            if (i > 0) {
+                int curt = (sc[i - 1] - '0') * 10 + sc[i] - '0';
+                if (curt >= 10 && curt <= 26) {
+                    dp[i + 1] += dp[i - 1];
+                }            
+            }       
+        }
+        
+        return dp[len];
+    }
+}
+</pre>
+
+## 374. Spiral Matrix
+<pre>
+public class Solution {
+    /**
+     * @param matrix: a matrix of m x n elements
+     * @return: an integer list
+     */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        // write your code here
+        List<Integer> list = new ArrayList<>();
+        
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return list;
+        }
+        
+        int n = matrix.length, m = matrix[0].length;        
+        int top = 0, bot = n - 1, left = 0, right = m - 1;
+        
+        while (top <= bot && left <= right) {
+            list.addAll(helper(matrix, top, bot, left, right));     
+            left ++;
+            right --;
+            top ++;
+            bot --;            
+        }
+        
+        return list;       
+    }
+    
+    private List<Integer> helper(int[][] matrix, int top, int bot, int left, int right) {
+        List<Integer> list = new ArrayList<>();        
+        int n = matrix.length, m = matrix[0].length;
+        
+        for (int i = left; i <= right; ++i) {
+            list.add(matrix[top][i]);
+        }
+        
+        for (int i = top + 1; i <= bot; ++i) {
+            list.add(matrix[i][right]);
+        }
+        
+        if (top != bot) {        
+            for (int i = right - 1; i >= left; --i) {
+                list.add(matrix[bot][i]);   
+            }       
+        }
+        
+        if (left != right) {        
+            for (int i = bot - 1; i >= top + 1; --i) {
+                list.add(matrix[i][left]);
+            }
+        }
+        
+        return list;
+    }
+}
+</pre>
+
+## 159. Find Minimum in Rotated Sorted Array
+<pre>
+public class Solution {
+    /**
+     * @param nums: a rotated sorted array
+     * @return: the minimum number in the array
+     */
+    public int findMin(int[] nums) {
+        // write your code here
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        
+        int begin = 0, end = nums.length - 1;
+        
+        while (begin + 1 < end) {
+            int mid = begin + (end - begin) / 2;
+            if (nums[mid] > nums[end]) {
+                begin = mid;
+            } else {
+                end = mid;
+            }
+        }
+        
+        if (nums[begin] < nums[end]) {
+            return nums[begin];
+        }
+        
+        return nums[end];
+    }
+}
+</pre>
+
+## 94. Binary Tree Maximum Path Sum
+<pre>
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param root: The root of binary tree.
+     * @return: An integer
+     */
+     
+    int maxSum = Integer.MIN_VALUE;
+    public int maxPathSum(TreeNode root) {
+        // write your code here
+        if (root == null) {
+            return 0;
+        }
+        
+        helper(root);
+        
+        return maxSum;       
+    }
+    
+    private int helper(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        
+        int left = Math.max(helper(root.left), 0);
+        int right = Math.max(helper(root.right), 0);
+        
+        if (root.val + left + right > maxSum) {
+            maxSum = root.val + left + right;
+        }
+        
+        return root.val + Math.max(left, right);
+    }
+}
+</pre>
+
+## 62. Search in Rotated Sorted Array
+<pre>
+public class Solution {
+    /**
+     * @param A: an integer rotated sorted array
+     * @param target: an integer to be searched
+     * @return: an integer
+     */
+    public int search(int[] A, int target) {
+        // write your code here
+        if (A == null || A.length == 0) {
+            return -1;
+        }
+        
+        int begin = 0, end = A.length - 1;
+        while (begin + 1 < end) {
+            int mid = begin + (end - begin) / 2;
+            
+            if (A[mid] < A[end]) {
+                if (A[mid] <= target && target <= A[end]) {
+                    begin = mid;
+                } else {
+                    end = mid;
+                }           
+            } else {
+                if (A[begin] <= target && target <= A[mid]) {
+                    end = mid;                
+                } else {
+                    begin = mid;
+                }           
+            }       
+        }
+        
+        if (A[begin] == target) {
+            return begin;
+        }
+        
+        if (A[end] == target) {
+            return end;
+        }
+        
+        return -1;
+    }
+}
+</pre>
+
+# 2-Hard
+
+## 1305. Integer to English Words
+<pre>
+class Solution {
+    private final String[] LESS_THAN_20 = {"", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
+    private final String[] TENS = {"", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"};
+    private final String[] THOUSANDS = {"", "Thousand", "Million", "Billion"};
+    
+    public String numberToWords(int num) {
+        if (num == 0) {
+            return "Zero";
+        }
+        
+        String rst = "";
+        int i = 0;
+        
+        while (num > 0) {
+            rst = helper(num % 1000) + THOUSANDS[i] + " " + rst;
+            num /= 1000;
+            i ++;            
+        }
+        
+        return rst.trim();
+    }
+    
+    private String helper(int x) {
+        if (x == 0) {
+            return "";
+        }
+        
+        if (x < 20) {
+            return LESS_THAN_20[x] + " ";
+        }
+        
+        if (x < 100) {
+            return TENS[x / 10] + " " + helper(x % 10);        
+        }
+        
+        return LESS_THAN_20[x / 100] + " Hundred " + helper(x % 100);    
+    }
+}
+</pre>
+
+## 1346. Dungeon Game
+<pre>
+public class Solution {
+    /**
+     * @param dungeon: a 2D array
+     * @return: return a integer
+     */
+    public int calculateMinimumHP(int[][] dungeon) {
+        // write your code here
+        int begin = 1, end = Integer.MAX_VALUE;
+        
+        while (begin + 1 < end) {
+            int mid = begin + (end - begin) / 2;
+            if (can(mid, dungeon)) {
+                end = mid;
+            } else {
+                begin = mid;
+            }        
+        }
+        
+        if (can(begin, dungeon)) {
+            return begin;
+        }
+        
+        return end;
+    }
+    
+    private boolean can(int h, int[][] dungeon) {
+        int n = dungeon.length, m = dungeon[0].length;
+        
+        if (h + dungeon[0][0] <= 0) {
+            return false;
+        }
+        
+        int[][] f = new int[n][m];
+        f[0][0] = h + dungeon[0][0];
+        
+        for (int i = 1; i < n; ++i) {
+            if (f[i - 1][0] == Integer.MIN_VALUE) {
+                f[i][0] = Integer.MIN_VALUE;
+                continue;
+            }
+            
+            f[i][0] = f[i - 1][0] + dungeon[i][0];
+            if (f[i][0] <= 0) {
+                f[i][0] = Integer.MIN_VALUE;            
+            }
+        }
+        
+        for (int j = 1; j < m; ++j) {
+            if (f[0][j - 1] == Integer.MIN_VALUE) {
+                f[0][j] = Integer.MIN_VALUE;
+                continue;
+            }
+            
+            f[0][j] = f[0][j - 1] + dungeon[0][j];
+            if (f[0][j] <= 0) {
+                f[0][j] = Integer.MIN_VALUE;            
+            }
+        }
+        
+        for (int i = 1; i < n; ++i) {
+            for (int j = 1; j < m; ++j) {
+                f[i][j] = Math.max(f[i - 1][j], f[i][j - 1]);
+                
+                if (f[i][j] == Integer.MIN_VALUE) {
+                    continue;
+                }
+                
+                f[i][j] += dungeon[i][j];
+                
+                if (f[i][j] <= 0) {
+                    f[i][j] = Integer.MIN_VALUE;   
+                }
+            }        
+        }
+        
+        
+        return f[n - 1][m - 1] > 0;
+    }
+}
+</pre>
+
+## 134. LRU Cache
+<pre>
+class Node {
+    int key, val;
+    Node pre, next;
+    public Node(int key, int val) {
+        this.key = key;
+        this.val = val;    
+    }
+}
+
+
+public class LRUCache {
+    /*
+    * @param capacity: An integer
+    */
+    
+    Node head, tail;
+    int cap;   
+    
+    Map<Integer, Node> map;
+    
+    public LRUCache(int capacity) {
+        // do intialization if necessary
+        head = new Node(-1, -1);
+        tail = new Node(-1, -1);
+        head.next = tail;
+        tail.pre = head;
+        this.cap = capacity;
+        map = new HashMap<>();
+    }
+
+    /*
+     * @param key: An integer
+     * @return: An integer
+     */
+    public int get(int key) {
+        // write your code here
+        if (!map.containsKey(key)) {
+            return -1;
+        }
+        
+        Node node = map.get(key);
+        
+        node.pre.next = node.next;
+        node.next.pre = node.pre;
+        
+        moveToTail(node);
+        return node.val;
+    }
+    
+    private void moveToTail(Node node) {
+        node.pre = tail.pre;
+        tail.pre.next = node;
+        tail.pre = node;
+        node.next = tail;
+    }
+
+    /*
+     * @param key: An integer
+     * @param value: An integer
+     * @return: nothing
+     */
+    public void set(int key, int value) {
+        // write your code here
+        if (get(key) != -1) {
+            map.get(key).val = value;
+            return;
+        }
+        
+        Node node = new Node(key, value);
+        if (map.keySet().size() == cap) {
+            Node delete = head.next;
+            map.remove(delete.key);
+            head.next = head.next.next;
+            head.next.pre = head;
+        }
+        
+        map.put(key, node);
+        moveToTail(node);        
+    }
+}
+</pre>
+
