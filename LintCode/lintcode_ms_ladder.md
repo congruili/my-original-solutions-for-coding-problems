@@ -1630,6 +1630,71 @@ public class Solution {
 }
 </pre>
 
+## 450. Reverse Nodes in k-Group
+<pre>
+/**
+ * Definition for ListNode
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+
+public class Solution {
+    /**
+     * @param head: a ListNode
+     * @param k: An integer
+     * @return: a ListNode
+     */
+    public ListNode reverseKGroup(ListNode head, int k) {
+        // write your code here
+        if (head == null || head.next == null || k < 2) {
+            return head;
+        }
+        
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode begin = dummy;
+        int i = 0;
+        
+        while (head != null) {
+            i ++;
+            if (i % k == 0) {
+                begin = reverse(begin, head.next);
+                head = begin.next;           
+            } else {
+                head = head.next;
+            }
+        }
+        
+        return dummy.next;        
+    }
+    
+    private ListNode reverse(ListNode begin, ListNode end) {
+        ListNode first = begin.next;
+        ListNode head = first;
+        ListNode pre = begin;
+        
+        while (head != end) {
+            ListNode tmp = head.next;
+            head.next = pre;
+            pre = head;
+            head = tmp;        
+        }
+        
+        begin.next = pre;
+        first.next = head;
+        
+        return first;
+    
+    }
+}
+</pre>
+
 ## 134. LRU Cache
 <pre>
 class Node {
@@ -1714,3 +1779,230 @@ public class LRUCache {
 }
 </pre>
 
+## 132. Word Search II
+<pre>
+class TrieNode {
+    TrieNode[] children;
+    String word;
+    
+    public TrieNode() {
+        children = new TrieNode[26];    
+    }
+}
+
+class Trie {
+    TrieNode root;
+    
+    public Trie() {
+        root = new TrieNode();    
+    }
+    
+    public void insert(String word) {
+        TrieNode curt = root;
+        
+        for (char c: word.toCharArray()) {
+            if (curt.children[c - 'a'] == null) {
+                curt.children[c - 'a'] = new TrieNode();               
+            }            
+            
+            curt = curt.children[c - 'a'];        
+        }
+        
+        curt.word = word;    
+    }
+}
+
+public class Solution {
+    /**
+     * @param board: A list of lists of character
+     * @param words: A list of string
+     * @return: A list of string
+     */
+    public List<String> wordSearchII(char[][] board, List<String> words) {
+        // write your code here
+        List<String> rst = new ArrayList<>();
+        if (board == null || board.length == 0 || board[0].length == 0) {
+            return rst;
+        }
+        
+        Trie tree = new Trie();
+        
+        for (String w: words) {
+            tree.insert(w);
+        }
+        
+        int n = board.length, m = board[0].length;
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                dfs(board, i, j, tree.root, rst);            
+            }        
+        }
+        
+        return rst;     
+    }
+    
+    private void dfs(char[][] board, int i, int j, TrieNode node, List<String> rst) {
+        if (!isValid(board, i, j)) {
+            return;
+        }
+        
+        if (board[i][j] == '#') {
+            return;
+        }
+        
+        char c = board[i][j];    
+        if (node.children[c - 'a'] == null) {
+            return;
+        }
+        
+        board[i][j] = '#';
+        
+        if (node.children[c - 'a'].word != null && !rst.contains(node.children[c - 'a'].word)) {
+            rst.add(node.children[c - 'a'].word);        
+        }
+        
+        int[] di = {-1, 1, 0, 0};
+        int[] dj = {0, 0, -1, 1};
+        
+        for (int k = 0; k < 4; ++k) {
+            int new_i = i + di[k];
+            int new_j = j + dj[k];
+            dfs(board, new_i, new_j, node.children[c - 'a'], rst);        
+        }
+        
+        board[i][j] = c;
+    }
+    
+    private boolean isValid(char[][] board, int i, int j) {
+        int n = board.length, m = board[0].length;
+        return i >= 0 && i < n && j >= 0 && j < m;   
+    }
+}
+</pre>
+
+## 86. Binary Search Tree Iterator
+<pre>
+/**
+ * Definition of TreeNode:
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left, right;
+ *     public TreeNode(int val) {
+ *         this.val = val;
+ *         this.left = this.right = null;
+ *     }
+ * }
+ * Example of iterate a tree:
+ * BSTIterator iterator = new BSTIterator(root);
+ * while (iterator.hasNext()) {
+ *    TreeNode node = iterator.next();
+ *    do something for node
+ * } 
+ */
+
+
+public class BSTIterator {
+    /*
+    * @param root: The root of binary tree.
+    */
+    Stack<TreeNode> stack;
+    
+    public BSTIterator(TreeNode root) {
+        // do intialization if necessary
+        stack = new Stack<>();
+        while (root != null) {
+            stack.push(root);
+            root = root.left;        
+        }        
+    }
+
+    /*
+     * @return: True if there has next node, or false
+     */
+    public boolean hasNext() {
+        // write your code here
+        return !stack.isEmpty();
+    }
+
+    /*
+     * @return: return next node
+     */
+    public TreeNode next() {
+        // write your code here
+        TreeNode node = stack.peek();
+        
+        if (node.right == null) {
+            TreeNode curt = stack.pop();
+            while (!stack.isEmpty() && stack.peek().right == curt) {
+                curt = stack.pop();
+            }        
+        } else {
+            TreeNode curt = node.right;
+            while (curt != null) {
+                stack.push(curt);
+                curt = curt.left;            
+            }        
+        }
+        
+        return node;
+    }
+}
+</pre>
+
+## 54. String to Integer (atoi)
+<pre>
+public class Solution {
+    /**
+     * @param str: A string
+     * @return: An integer
+     */
+    public int atoi(String str) {
+        // write your code here
+        if (str == null || str.length() == 0) {
+            return 0;
+        }
+        
+        str = str.trim() + " ";
+        char[] sc = str.toCharArray();
+        
+        int i = 0;
+        int sign = 1;
+        
+        if (sc[i] == '+') {
+            i ++;
+        } else if (sc[i] == '-') {
+            sign = -1;
+            i ++;
+        }
+        
+        long curt = 0;
+        
+        while (i < sc.length) {
+            if (!Character.isDigit(sc[i])) {
+                break;           
+            }
+            
+            curt = curt * 10 + sc[i] - '0';
+            
+            if (curt > Integer.MAX_VALUE) {
+                break;
+            }
+            
+            i ++;
+        }
+        
+        curt *= sign;
+        if (curt > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        
+        if (curt < Integer.MIN_VALUE) {
+            return Integer.MIN_VALUE;
+        }
+        
+        return (int)curt;    
+
+    }
+}
+</pre>

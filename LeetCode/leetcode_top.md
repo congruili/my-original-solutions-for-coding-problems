@@ -1525,6 +1525,65 @@ public class NestedIterator implements Iterator<Integer> {
  */
 </pre>
 
+## 348 Design Tic-Tac-Toe
+<pre>
+class TicTacToe {
+
+    /** Initialize your data structure here. */
+    int[] rows;
+    int[] cols;
+    int diag;
+    int anti_diag;
+    
+    public TicTacToe(int n) {
+        rows = new int[n];
+        cols = new int[n];
+        diag = 0;
+        anti_diag = 0;        
+    }
+    
+    /** Player {player} makes a move at ({row}, {col}).
+        @param row The row of the board.
+        @param col The column of the board.
+        @param player The player, can be either 1 or 2.
+        @return The current winning condition, can be either:
+                0: No one wins.
+                1: Player 1 wins.
+                2: Player 2 wins. */
+    public int move(int row, int col, int player) {
+        int n = rows.length;
+        int add = 1;
+        if (player == 2) {
+            add = -1;
+        }
+        
+        rows[row] += add;
+        cols[col] += add;
+        
+        if (row == col) {
+            diag += add;        
+        }
+        
+        if (row + col == n - 1) {
+            anti_diag += add;
+        }
+        
+        if (Math.abs(rows[row]) == n || Math.abs(cols[col]) == n || Math.abs(diag) == n || Math.abs(anti_diag) == n) {
+            return player;
+        }
+        
+        return 0;
+        
+    }
+}
+
+/**
+ * Your TicTacToe object will be instantiated and called as such:
+ * TicTacToe obj = new TicTacToe(n);
+ * int param_1 = obj.move(row,col,player);
+ */
+</pre>
+
 ## 378 Kth Smallest Element in a Sorted Matrix
 <pre>
 class Point {
@@ -1574,3 +1633,185 @@ class Solution {
 }
 </pre>
 
+## 380 Insert Delete GetRandom O(1)
+<pre>
+class RandomizedSet {
+
+    /** Initialize your data structure here. */
+    List<Integer> list;
+    Map<Integer, Integer> map;    
+    Random rand;
+    
+    public RandomizedSet() {
+        list = new ArrayList<>();
+        map = new HashMap<>();   
+        rand = new Random();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        if (map.containsKey(val)) {
+            return false;
+        }
+        
+        map.put(val, list.size());
+        list.add(val);
+        
+        return true;      
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        if (!map.containsKey(val)) {
+            return false;
+        }
+        
+        int ind = map.get(val);
+        
+        if (ind == list.size() - 1) {
+            map.remove(val);
+            list.remove(list.size() - 1);
+            return true;       
+        }
+        
+        int lastInd = list.size() - 1;
+        int lastVal = list.get(lastInd);
+        map.put(lastVal, ind);
+        map.remove(val);
+        list.remove(list.size() - 1);
+        list.set(ind, lastVal);
+        
+        return true;        
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        int i = rand.nextInt(list.size());
+        
+        return list.get(i);        
+    }
+}
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet obj = new RandomizedSet();
+ * boolean param_1 = obj.insert(val);
+ * boolean param_2 = obj.remove(val);
+ * int param_3 = obj.getRandom();
+ */
+</pre>
+
+## 384 Shuffle an Array
+<pre>
+class Solution {
+    int[] nums;
+    Random rand;
+
+    public Solution(int[] nums) {
+        this.nums = nums;
+        rand = new Random();       
+    }
+    
+    /** Resets the array to its original configuration and return it. */
+    public int[] reset() {
+        return nums;        
+    }
+    
+    /** Returns a random shuffling of the array. */
+    public int[] shuffle() {
+        if (nums == null) {
+            return null;
+        }
+        
+        int[] a = nums.clone();
+        
+        for (int j = 1; j < a.length; ++j) {
+            int i = rand.nextInt(j + 1);
+            swap(a, i, j);       
+        }
+        
+        return a;        
+    }
+    
+    private void swap(int[] a, int i, int j) {
+        int tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;    
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(nums);
+ * int[] param_1 = obj.reset();
+ * int[] param_2 = obj.shuffle();
+ */
+</pre>
+
+## 412 Fizz Buzz
+<pre>
+class Solution {
+    public List<String> fizzBuzz(int n) {
+        List<String> list = new ArrayList<>();
+
+        for (int i = 1; i <= n; ++i) {
+            if (i % 3 == 0 && i % 5 == 0) {
+                list.add("FizzBuzz");
+            } else if (i % 3 == 0) {
+                list.add("Fizz");
+            } else if (i % 5 == 0) {
+                list.add("Buzz");
+            } else {
+                list.add(i + "");
+            }
+        }
+        
+        return list;        
+    }
+}
+</pre>
+
+## 454 4Sum II
+<pre>
+class Solution {
+    public int fourSumCount(int[] A, int[] B, int[] C, int[] D) {
+        Map<Integer, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < A.length; ++ i) {
+            for (int j = 0; j < B.length; ++ j) {
+                int curt = A[i] + B[j];
+                if (!map.containsKey(curt)) {
+                    map.put(curt, 0);
+                }
+                
+                map.put(curt, map.get(curt) + 1);            
+            }        
+        }
+        
+        Map<Integer, Integer> map2 = new HashMap<>();
+        
+        for (int i = 0; i < C.length; ++ i) {
+            for (int j = 0; j < D.length; ++ j) {
+                int curt = C[i] + D[j];
+                if (!map2.containsKey(curt)) {
+                    map2.put(curt, 0);
+                }
+                
+                map2.put(curt, map2.get(curt) + 1);            
+            }        
+        }
+        
+        int count = 0;
+        
+        for (int key: map.keySet()) {
+            if (!map2.containsKey(0 - key)) {
+                continue;
+            }
+            
+            count += map.get(key) * map2.get(0 - key);       
+        }
+        
+        return count;       
+    }
+}
+</pre>
