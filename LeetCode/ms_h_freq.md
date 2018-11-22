@@ -1,4 +1,4 @@
-## 402 Remove K Digits
+## 402. Remove K Digits
 <pre>
 class Solution {
     public String removeKdigits(String num, int k) {
@@ -44,7 +44,7 @@ class Solution {
 }
 </pre>
 
-## 165 Compare Version Numbers
+## 165. Compare Version Numbers
 <pre>
 class Solution {
     public int compareVersion(String version1, String version2) {
@@ -75,7 +75,7 @@ class Solution {
 }
 </pre>
 
-## 24 Swap Nodes in Pairs
+## 24. Swap Nodes in Pairs
 <pre>
 /**
  * Definition for singly-linked list.
@@ -111,7 +111,7 @@ class Solution {
 }
 </pre>
 
-## 229 Majority Element II
+## 229. Majority Element II
 <pre>
 class Solution {
     public List<Integer> majorityElement(int[] nums) {
@@ -179,7 +179,7 @@ class Solution {
 }
 </pre>
 
-## 10 Regular Expression Matching
+## 10. Regular Expression Matching
 <pre>
 class Solution {
     public boolean isMatch(String s, String p) {
@@ -237,7 +237,7 @@ class Solution {
 }
 </pre>
 
-## 25 Reverse Nodes in k-Group
+## 25. Reverse Nodes in k-Group
 <pre>
 /**
  * Definition for singly-linked list.
@@ -294,7 +294,7 @@ class Solution {
 }
 </pre>
 
-## 669 Trim a Binary Search Tree
+## 669. Trim a Binary Search Tree
 <pre>
 /**
  * Definition for a binary tree node.
@@ -328,7 +328,7 @@ class Solution {
 }
 </pre>
 
-## 443 String Compression
+## 443. String Compression
 <pre>
 class Solution {
     public int compress(char[] chars) {
@@ -372,6 +372,405 @@ class Solution {
         
         return ind;        
         
+    }
+}
+</pre>
+
+## 722. Remove Comments
+<pre>
+class Solution {
+    public List<String> removeComments(String[] source) {
+        List<String> rst = new ArrayList<>();
+        
+        if (source == null || source.length == 0) {
+            return rst;
+        }
+        
+        boolean begin = false;
+        StringBuilder sb = new StringBuilder();
+        
+        for (String s: source) {
+            int len = s.length();
+            for (int i = 0; i < len; ++i) {
+                if (begin) {
+                    if (s.charAt(i) == '*' && i < len - 1 && s.charAt(i + 1) == '/') {
+                        begin = false;
+                        i ++;                    
+                    }               
+                } else {
+                    if (s.charAt(i) == '/' && i < len - 1 && s.charAt(i + 1) == '/') {
+                        break;
+                    } else if (s.charAt(i) == '/' && i < len - 1 && s.charAt(i + 1) == '*') {
+                        begin = true;
+                        i ++;
+                    } else {
+                        sb.append(s.charAt(i));                    
+                    }            
+                }
+                
+
+            }
+            
+            if (!begin && sb.length() > 0) {
+                rst.add(sb.toString());
+                sb = new StringBuilder();               
+            }        
+        }
+        
+        return rst;        
+    }
+}
+</pre>
+
+## 545. Boundary of Binary Tree
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    List<Integer> list;    
+
+    public List<Integer> boundaryOfBinaryTree(TreeNode root) {
+        list = new ArrayList<>();
+        
+        if (root == null) {
+            return list;
+        }
+        
+        list.add(root.val);        
+        goLeft(root.left);
+        getLeaves(root.left);
+        getLeaves(root.right);
+        goRight(root.right);
+        
+        return list;       
+    }
+    
+    private void goLeft(TreeNode node) {
+        if (node == null || (node.left == null && node.right == null)) {
+            return;
+        }
+        
+        list.add(node.val);
+        if (node.left != null) {
+            goLeft(node.left);
+        } else {
+            goLeft(node.right);
+        }   
+    }
+    
+    private void getLeaves(TreeNode node) {
+        if (node == null) {
+            return;
+        }
+        
+        if (node.left == null && node.right == null) {
+            list.add(node.val);
+            return;
+        } 
+        
+        if (node.left != null) {
+            getLeaves(node.left);        
+        }
+        
+        if (node.right != null) {
+            getLeaves(node.right);        
+        }
+    }
+    
+    private void goRight(TreeNode node) {
+        if (node == null || (node.left == null && node.right == null)) {
+            return;
+        }
+        
+        if (node.right != null) {
+            goRight(node.right);
+        } else {
+            goRight(node.left);
+        }
+        
+        list.add(node.val);    
+    
+    }
+}
+</pre>
+
+## 558. Quad Tree Intersection
+<pre>
+/*
+// Definition for a QuadTree node.
+class Node {
+    public boolean val;
+    public boolean isLeaf;
+    public Node topLeft;
+    public Node topRight;
+    public Node bottomLeft;
+    public Node bottomRight;
+
+    public Node() {}
+
+    public Node(boolean _val,boolean _isLeaf,Node _topLeft,Node _topRight,Node _bottomLeft,Node _bottomRight) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = _topLeft;
+        topRight = _topRight;
+        bottomLeft = _bottomLeft;
+        bottomRight = _bottomRight;
+    }
+};
+*/
+class Solution {
+    public Node intersect(Node quadTree1, Node quadTree2) {       
+        if (quadTree1.isLeaf) {
+            return quadTree1.val ? quadTree1 : quadTree2;        
+        }
+        
+        if (quadTree2.isLeaf) {
+            return quadTree2.val ? quadTree2 : quadTree1;        
+        }
+        
+        Node rst = new Node();
+        Node topLeft =  intersect(quadTree1.topLeft, quadTree2.topLeft);
+        Node topRight =  intersect(quadTree1.topRight, quadTree2.topRight);
+        Node bottomLeft =  intersect(quadTree1.bottomLeft, quadTree2.bottomLeft);
+        Node bottomRight =  intersect(quadTree1.bottomRight, quadTree2.bottomRight);
+        
+        if (topLeft.isLeaf && topRight.isLeaf && bottomLeft.isLeaf && bottomRight.isLeaf) {
+            if (topLeft.val && topRight.val && bottomLeft.val && bottomRight.val) {
+                rst.val = true;
+                rst.isLeaf = true;
+                return rst;            
+            } else if (!topLeft.val && !topRight.val && !bottomLeft.val && !bottomRight.val) {
+                rst.val = false;
+                rst.isLeaf = true;
+                return rst;            
+            } 
+        }
+        
+        rst.topLeft = topLeft;
+        rst.topRight = topRight;
+        rst.bottomLeft = bottomLeft;
+        rst.bottomRight = bottomRight;
+        
+        rst.isLeaf = false;
+        return rst;
+        
+    }
+}
+</pre>
+
+## 450. Delete Node in a BST
+<pre>
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null) {
+            return null;
+        }
+        
+        if (root.val < key) {
+            root.right = deleteNode(root.right, key);
+        } else if (root.val > key) {
+            root.left = deleteNode(root.left, key);
+        } else {
+            if (root.left == null) {
+                return root.right;
+            } else if (root.right == null) {
+                return root.left;
+            } else {
+                TreeNode minNode = findMin(root.right);
+                root.val = minNode.val;
+                root.right = deleteNode(root.right, root.val);              
+            }        
+        }
+        
+        return root;        
+    }
+    
+    private TreeNode findMin(TreeNode node) {
+        while (node.left != null) {
+            node = node.left;
+        }
+        
+        return node;    
+    }
+}
+</pre>
+
+## 398. Random Pick Index
+<pre>
+class Solution {
+    int[] nums;
+    Random rand;
+
+    public Solution(int[] nums) {
+        this.nums = nums;
+        rand = new Random();       
+    }
+    
+    public int pick(int target) {
+        int cand = -1;
+        int count = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            if (nums[i] != target) {
+                continue;
+            }
+            
+            count ++;
+            if (rand.nextInt(count) == 0) {
+                cand = i;
+            }        
+        }
+        
+        return cand;       
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(nums);
+ * int param_1 = obj.pick(target);
+ */
+</pre>
+
+## 836. Rectangle Overlap
+<pre>
+class Solution {
+    public boolean isRectangleOverlap(int[] rec1, int[] rec2) {
+        if (rec1[0] >= rec2[2] || rec1[2] <= rec2[0] || rec1[1] >= rec2[3] || rec1[3] <= rec2[1]) {
+            return false;
+        }
+        
+        return true;       
+    }
+}
+</pre>
+
+## 61. Rotate List
+<pre>
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null || head.next == null || k == 0) {
+            return head;
+        }
+    
+        int len = 0;
+        ListNode curt = head;
+        while (curt != null) {
+            len ++;
+            curt = curt.next;
+        }
+        
+        k %= len;
+        
+        if (k == 0) {
+            return head;
+        }
+        
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        
+        ListNode fast = dummy;
+        while (k > 0) {
+            fast = fast.next;
+            k --;
+        }
+        
+        ListNode slow = dummy;
+        while (fast.next != null) {
+            slow = slow.next;
+            fast = fast.next;
+        }
+        
+        ListNode newHead = slow.next;
+        slow.next = null;
+        fast.next = head;
+        
+        return newHead;        
+        
+    }
+}
+</pre>
+
+## 138. Copy List with Random Pointer
+<pre>
+/**
+ * Definition for singly-linked list with a random pointer.
+ * class RandomListNode {
+ *     int label;
+ *     RandomListNode next, random;
+ *     RandomListNode(int x) { this.label = x; }
+ * };
+ */
+public class Solution {
+    public RandomListNode copyRandomList(RandomListNode head) {
+        if (head == null) {
+            return null;
+        }
+        
+        copyNext(head);
+        copyRandom(head);
+        
+        return split(head);        
+    }
+    
+    private void copyNext(RandomListNode head) {
+        while (head != null) {
+            RandomListNode newNode = new RandomListNode(head.label);
+            newNode.next = head.next;
+            head.next = newNode;
+            head = newNode.next;
+        }    
+    }
+    
+    private void copyRandom(RandomListNode head) {
+        while (head != null) {
+            if (head.random != null) {
+                head.next.random = head.random.next;            
+            }
+            
+            head = head.next.next;       
+        }
+    }
+    
+    private RandomListNode split(RandomListNode head) {
+        RandomListNode newHead = head.next;
+        
+        while (head != null) {
+            RandomListNode tmp = head.next;
+            head.next = tmp.next;
+            if (tmp.next != null) {
+                tmp.next = tmp.next.next;
+            }
+            
+            head = head.next;           
+
+        }
+        
+        return newHead; 
+    
     }
 }
 </pre>
