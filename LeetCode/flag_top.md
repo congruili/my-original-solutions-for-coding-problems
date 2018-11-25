@@ -303,3 +303,242 @@ class Solution {
 }
 </pre>
 
+## 421. Maximum XOR of Two Numbers in an Array
+<pre>
+class TrieNode {
+    TrieNode[] children;
+    public TrieNode() {
+        children = new TrieNode[2];    
+    }
+}
+
+class Solution {
+    public int findMaximumXOR(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        TrieNode root = new TrieNode();
+        
+        for (int num: nums) {
+            TrieNode curt = root;
+            for (int i = 31; i >= 0; -- i) {
+                int bit = (num >>> i) & 1;
+                if (curt.children[bit] == null) {
+                    curt.children[bit] = new TrieNode();
+                }
+                
+                curt = curt.children[bit];
+            }
+        }
+        
+        int rst = Integer.MIN_VALUE;
+        
+        for (int num: nums) {
+            int curtMax = 0;
+            TrieNode curt = root;
+            for (int i = 31; i >= 0; -- i) {
+                int bit = (num >>> i) & 1;
+                if (curt.children[bit ^ 1] != null) {
+                    curt = curt.children[bit ^ 1];
+                    curtMax += (1 << i);             
+                } else {
+                    curt = curt.children[bit];                    
+                }         
+            }
+            
+            rst = Math.max(rst, curtMax);        
+        
+        }
+        
+        return rst;        
+        
+    }
+}
+</pre>
+
+## 65. Valid Number
+<pre>
+class Solution {
+    public boolean isNumber(String s) {
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+        
+        s = s.trim() + " ";
+        char[] sc = s.toCharArray();
+        
+        int len = sc.length - 1;
+        int i = 0;
+        if (sc[i] == '+' || sc[i] == '-') {
+            i ++;
+        }
+        
+        int nDigit = 0, nDot = 0;
+        while (i < len) {
+            if (sc[i] == '.') {
+                nDot ++;
+            } else if (sc[i] >= '0' && sc[i] <= '9') {
+                nDigit ++;
+            } else {
+                break;
+            }
+            
+            i ++;
+        }
+        
+        if (nDigit == 0 || nDot > 1) {
+            return false;
+        }
+        
+        if (sc[i] == 'e') {
+            i ++;
+            if (sc[i] == '+' || sc[i] == '-') {
+                i ++;
+            }
+            
+            if (i == len) {
+                return false;
+            }
+            
+            while (i < len) {
+                if (!Character.isDigit(sc[i])) {
+                    return false;
+                }
+                
+                i ++;                
+            }    
+        }
+        
+        return i == len;
+        
+    }
+}
+</pre>
+
+## 68. Text Justification
+<pre>
+class Solution {
+    public List<String> fullJustify(String[] words, int maxWidth) {
+        List<String> list = new ArrayList<>();
+        if (words == null || words.length == 0) {
+            return list;
+        }
+        
+        int len = words.length, i = 0;
+        while (i < len) {
+            int left = i;
+            int count = words[i].length();
+            i ++;
+            while (i < len && count + 1 + words[i].length() <= maxWidth) {
+                count += (1 + words[i].length());
+                i ++;            
+            }
+            
+            StringBuilder sb = new StringBuilder();
+            sb.append(words[left]);
+            
+            if (i == len) {           
+                for (int j = left + 1; j < i; ++j) {
+                    sb.append(' ').append(words[j]);
+                }
+                
+                if (sb.length() < maxWidth) {
+                    int nSpace = maxWidth - count;
+                    for (int k = 0; k < nSpace; ++k) {
+                        sb.append(' ');
+                    }
+                }
+                
+                list.add(sb.toString());
+                break;            
+            }
+            
+            int dividend = maxWidth - count;
+            int divisor = i - left - 1;
+            
+            if (divisor == 0) {
+                for (int k = 0; k < dividend; ++k) {
+                    sb.append(' ');
+                }
+                
+                list.add(sb.toString());
+                continue;
+            }
+            
+            int n = dividend / divisor;
+            int extra = dividend % divisor;
+            
+            for (int j = left + 1; j < i; ++j) {
+                int curt = n + 1;
+                if (j - left <= extra) {
+                    curt ++;
+                }
+                
+                for (int k = 0; k < curt; ++k) {
+                    sb.append(' ');
+                }
+                
+                sb.append(words[j]);        
+            }
+            
+            list.add(sb.toString());
+        }
+        
+        return list;        
+        
+    }
+}
+</pre>
+
+## 528. Random Pick with Weight
+<pre>
+class Solution {
+    int[] sums;
+    int sum;
+    Random rand;
+
+    public Solution(int[] w) {
+        int len = w.length;
+        sums = new int[len];
+        sums[0] = w[0];
+        for (int i = 1; i < len; ++i) {
+            sums[i] = sums[i - 1] + w[i];        
+        }
+        
+        sum = sums[len - 1];
+        rand = new Random();     
+    }
+    
+    public int pickIndex() {
+        int curt = rand.nextInt(sum) + 1;
+        return search(sums, curt);     
+    }
+    
+    private int search(int[] sums, int t) {
+        int begin = 0, end = sums.length - 1;
+        while (begin + 1 < end) {
+            int mid = begin + (end - begin) / 2;
+            if (sums[mid] >= t) {
+                end = mid;
+            } else {
+                begin = mid;
+            }     
+        }
+        
+        if (sums[begin] >= t) {
+            return begin;
+        }
+        
+        return end;    
+    
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(w);
+ * int param_1 = obj.pickIndex();
+ */
+</pre>
+
