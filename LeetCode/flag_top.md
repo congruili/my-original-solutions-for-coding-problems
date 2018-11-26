@@ -542,3 +542,146 @@ class Solution {
  */
 </pre>
 
+## 698. Partition to K Equal Sum Subsets
+<pre>
+class Solution {
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        if (nums == null || nums.length == 0) {
+            return false;
+        }
+        
+        if (k == 1) {
+            return true;
+        }
+        
+        int len = nums.length;
+        int sum = 0;
+        
+        for (int i = 0; i < len; ++i) {
+            sum += nums[i];
+        }
+        
+        if (sum < k || sum % k != 0) {
+            return false;
+        }
+        
+        int t = sum / k;
+        
+        Arrays.sort(nums);
+        if (nums[len - 1] > t) {
+            return false;
+        }
+        
+        boolean[] visited = new boolean[len];
+        
+        for (int i = 0; i < k; ++i) {
+            if (!dfs(nums, t, visited)) {
+                return false;
+            }        
+        }
+        
+        return true;
+        
+    }
+    
+    private boolean dfs(int[] nums, int target, boolean[] visited) {
+        if (target == 0) {
+            return true;
+        }
+        
+        for (int i = nums.length - 1; i >= 0; --i) {
+            if (nums[i] <= target && !visited[i]) {
+                visited[i] = true;
+                if (dfs(nums, target - nums[i], visited)) {
+                    return true;
+                }
+                
+                visited[i] = false;            
+            }        
+        }
+        
+        return false;    
+    
+    }
+}
+</pre>
+
+## 605. Can Place Flowers
+<pre>
+class Solution {
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        int count = 0;
+        int len = flowerbed.length;
+        
+        for (int i = 0; i < len; ++i) {
+            if (flowerbed[i] == 0 && (i == 0 || flowerbed[i - 1] == 0) && (i == len - 1 || flowerbed[i + 1] == 0)) {
+                count ++;
+                flowerbed[i] = 1;
+            }
+            
+            if (count >= n) {
+                return true;
+            }     
+        }
+        
+        return false;        
+    }
+}
+</pre>
+
+## 730. Count Different Palindromic Subsequences
+<pre>
+class Solution {
+    public int countPalindromicSubsequences(String S) {
+        if (S == null || S.length() == 0) {
+            return 0;
+        }
+        
+        int len = S.length();
+        
+        int[][] dp = new int[len][len];
+        
+        for (int i = 0; i < len; ++i) {
+            dp[i][i] = 1;
+        }
+        
+        char[] sc = S.toCharArray();
+        
+        for (int i = len - 2; i >= 0; --i) {
+            for (int j = i + 1; j < len; ++j) {
+                if (sc[i] != sc[j]) {
+                    dp[i][j] = dp[i + 1][j] + dp[i][j - 1] - dp[i + 1][j - 1];             
+                } else {
+                    int low = i + 1;
+                    int high = j - 1;
+                    while (low <= high && sc[low] != sc[i]) {
+                        low ++;
+                    }
+                    
+                    while (low <= high && sc[high] != sc[j]) {
+                        high --;
+                    }
+                    
+                    if (low > high) {
+                        dp[i][j] = dp[i + 1][j - 1] * 2 + 2;                    
+                    } else if (low == high) {
+                        dp[i][j] = dp[i + 1][j - 1] * 2 + 1;                    
+                    } else {
+                        dp[i][j] = dp[i + 1][j - 1] * 2 - dp[low + 1][high - 1];                    
+                    }                
+                }
+                
+                if (dp[i][j] < 0) {
+                    dp[i][j] += 1000000007;
+                } else {
+                    dp[i][j] %= 1000000007;
+                }            
+            }     
+        }
+        
+        return dp[0][len - 1];
+        
+    }
+}
+</pre>
+
