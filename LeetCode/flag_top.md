@@ -685,3 +685,20 @@ class Solution {
 }
 </pre>
 
+## 633. Sum of Square Numbers
+<pre>
+class Solution {
+    public boolean judgeSquareSum(int c) {
+        Set<Integer> set = new HashSet<>();
+        
+        for (int i = 0; i <= (int)Math.sqrt(c); ++i) {
+            set.add(i * i);
+            if (set.contains(c - i * i)) {
+                return true;
+            }     
+        }
+        
+        return false;        
+    }
+}
+</pre>
