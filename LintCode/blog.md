@@ -394,3 +394,250 @@ public class Solution {
 }
 </pre>
 
+### 435. Post Office Problem
+<pre>
+public class Solution {
+    /**
+     * @param A: an integer array
+     * @param k: An integer
+     * @return: an integer
+     */
+    public int postOffice(int[] A, int k) {
+        // write your code here
+        if (A == null || A.length <= k) {
+            return 0;
+        }
+        
+        Arrays.sort(A);
+        int n = A.length;
+        
+        int[][] dis = oneOffice(A);
+        
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 1; i <= n; ++i) {
+            dp[i][1] = dis[1][i];
+        }
+        
+        for (int l = 2; l <= k; ++l) {
+            for (int i = l; i <= n; ++i) {
+                dp[i][l] = Integer.MAX_VALUE;
+                for (int j = l - 1; j < i; ++j) {
+                    dp[i][l] = Math.min(dp[i][l], dp[j][l - 1] + dis[j + 1][i]);       
+                }            
+            }     
+        }
+        
+        return dp[n][k];
+        
+    }
+    
+    private int[][] oneOffice(int[] A) {
+        int n = A.length;    
+        int[][] dis = new int[n + 1][n + 1];
+        
+        for (int i = 1; i <= n; ++i) {
+            for (int j = i + 1; j <= n; ++j) {
+                int median = (i + j) / 2;
+                for (int m = i; m <= j; ++m) {
+                    dis[i][j] += Math.abs(A[m - 1] - A[median - 1]);            
+                }
+            }  
+        }
+        
+        return dis;    
+    }
+}
+</pre>
+
+### 476. Stone Game
+<pre>
+public class Solution {
+    /**
+     * @param A: An integer array
+     * @return: An integer
+     */
+    public int stoneGame(int[] A) {
+        // write your code here
+        if (A == null || A.length == 0) {
+            return 0;
+        }
+        
+        int len = A.length;
+        int[] sums = new int[len + 1];
+        for (int i = 0; i < len; ++i) {
+            sums[i + 1] = sums[i] + A[i];       
+        }
+        
+        int[][] dp = new int[len][len];
+        
+        for (int k = 1; k < len; ++k) {
+            for (int i = 0; i + k < len; ++i) {
+                dp[i][i + k] = Integer.MAX_VALUE;
+                for (int j = i; j < i + k; ++j) {
+                    dp[i][i + k] = Math.min(dp[i][i + k], dp[i][j] + dp[j + 1][i + k] + sums[i + k + 1] - sums[i]);                
+                }        
+            }
+        }
+        
+        return dp[0][len - 1];
+    }
+}
+</pre>
+
+### 553. Bomb Enemy
+<pre>
+public class Solution {
+    /**
+     * @param grid: Given a 2D grid, each cell is either 'W', 'E' or '0'
+     * @return: an integer, the maximum enemies you can kill using one bomb
+     */
+    public int maxKilledEnemies(char[][] grid) {
+        // write your code here
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+        
+        int n = grid.length, m = grid[0].length;
+        
+        int[] cols = new int[m];
+        
+        
+        for (int j = 0; j < m; ++j) {
+            cols[j] = 0;
+            for (int i = 0; i < n; ++i) {
+                if (grid[i][j] == 'E') {
+                    cols[j] ++;
+                } else if (grid[i][j] == 'W') {
+                    break;                
+                }        
+            }     
+        }
+        
+        int rst = 0;
+        
+        for (int i = 0; i < n; ++i) {
+            int row = 0;
+            for (int j = 0; j < m; ++j) {
+                if (j == 0 || grid[i][j - 1] == 'W') {
+                    row = 0;
+                    for (int k = j; k < m && grid[i][k] != 'W'; ++k) {
+                        if (grid[i][k] == 'E') {
+                            row ++;
+                        }              
+                    }            
+                }
+                
+                if (i == 0 || grid[i - 1][j] == 'W') {
+                    cols[j] = 0;
+                    for (int k = i; k < n && grid[k][j] != 'W'; ++k) {
+                        if (grid[k][j] == 'E') {
+                            cols[j] ++;                        
+                        }
+                    }            
+                }
+                
+                if (grid[i][j] == '0') {
+                    rst = Math.max(rst, row + cols[j]);
+                }
+            }
+        }
+        
+        return rst;
+        
+    }
+}
+</pre>
+
+### 168. Burst Balloons
+<pre>
+public class Solution {
+    /**
+     * @param nums: A list of integer
+     * @return: An integer, maximum coins
+     */
+    public int maxCoins(int[] nums) {
+        // write your code here
+        if (nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        int[] arr = helper(nums);
+        
+        int len = arr.length;
+        int[][] dp = new int[len][len];
+        
+        for (int i = len - 2; i >= 0; --i) {
+            for (int j = i + 2; j < len; ++j) {
+                for (int k = i + 1; k <= j - 1; ++k) {
+                    dp[i][j] = Math.max(dp[i][j], dp[i][k] + dp[k][j] + arr[i] * arr[k] * arr[j]);               
+                }        
+            }   
+        }
+        
+        return dp[0][len - 1];
+        
+    }
+    
+    private int[] helper(int[] nums) {
+        int len = nums.length;
+        int[] arr = new int[len + 2];
+        arr[0] = 1;
+        for (int i = 0; i < len; ++i) {
+            arr[i + 1] = nums[i];
+        }
+        
+        arr[len + 1] = 1;
+        
+        return arr;
+    }
+}
+</pre>
+
+### 430. Scramble String
+<pre>
+public class Solution {
+    /**
+     * @param s1: A string
+     * @param s2: Another string
+     * @return: whether s2 is a scrambled string of s1
+     */
+    Map<String, Boolean> map = new HashMap<>(); 
+     
+    public boolean isScramble(String s1, String s2) {
+        // write your code here
+        if (s1 == null || s2 == null) {
+            return false;
+        }
+        
+        if (map.containsKey(s1 + "#" + s2)) {
+            return map.get(s1 + "#" + s2);
+        }        
+        
+        if (s1.length() != s2.length()) {
+            return false;
+        }
+        
+        if (s1.equals(s2)) {
+            return true;
+        }
+        
+        int len = s1.length();
+        for (int i = 1; i < len; ++i) {
+            if (isScramble(s1.substring(0, i), s2.substring(0, i)) && isScramble(s1.substring(i, len), s2.substring(i, len))) {
+                map.put(s1 + "#" + s2, true);                
+                return true;
+            }
+            
+            if (isScramble(s1.substring(0, i), s2.substring(len - i, len)) && isScramble(s1.substring(i, len), s2.substring(0, len - i))) {
+                map.put(s1 + "#" + s2, true);
+                return true;
+            }
+        }
+        
+        map.put(s1 + "#" + s2, false);        
+        return false;
+        
+    }
+}
+</pre>
+
