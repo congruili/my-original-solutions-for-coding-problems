@@ -641,3 +641,100 @@ public class Solution {
 }
 </pre>
 
+### 437. Copy Books
+<pre>
+public class Solution {
+    /**
+     * @param pages: an array of integers
+     * @param k: An integer
+     * @return: an integer
+     */
+    public int copyBooks(int[] pages, int k) {
+        // write your code here
+        if (pages == null || pages.length == 0) {
+            return 0;
+        }
+        
+        int n = pages.length;
+        
+        int[] sums = new int[n + 1];
+        for (int i = 0; i < n; ++i) {
+            sums[i + 1] = pages[i] + sums[i];
+        }
+        
+        int[][] dp = new int[n + 1][k + 1];
+        for (int i = 1 ;i <= n; ++i) {
+            dp[i][1] = sums[i];
+        }
+        
+        for (int j = 2; j <= k; ++j) {
+            for (int i = 1; i <= n; ++i) {
+                dp[i][j] = Integer.MAX_VALUE;
+                for (int m = 1; m <= i; ++m) {
+                    dp[i][j] = Math.min(dp[i][j], Math.max(dp[m][j - 1], sums[i] - sums[m]));               
+                }
+            }     
+        }
+        
+        return dp[n][k];
+        
+    }
+}
+</pre>
+
+### 29. Interleaving String
+<pre>
+public class Solution {
+    /**
+     * @param s1: A string
+     * @param s2: A string
+     * @param s3: A string
+     * @return: Determine whether s3 is formed by interleaving of s1 and s2
+     */
+    public boolean isInterleave(String s1, String s2, String s3) {
+        // write your code here
+        if (s1 == null || s2 == null || s3 == null) {
+            return false;
+        }
+        
+        int len1 = s1.length(), len2 = s2.length();
+        
+        if (len1 + len2 != s3.length()) {
+            return false;    
+        }
+        
+        boolean[][] dp = new boolean[len1 + 1][len2 + 1];
+        dp[0][0] = true;
+        
+        for (int i = 0; i < len1; ++i) {
+            if (s1.charAt(i) == s3.charAt(i)) {
+                dp[i + 1][0] = true;
+            } else {
+                break;
+            }
+        }
+        
+        for (int j = 0; j < len2; ++j) {
+            if (s2.charAt(j) == s3.charAt(j)) {
+                dp[0][j + 1] = true;
+            } else {
+                break;
+            }
+        }
+        
+        for (int i = 0; i < len1; ++i) {
+            for (int j = 0; j < len2; ++j) {
+                if (dp[i + 1][j] && s2.charAt(j) == s3.charAt(i + j + 1)) {
+                    dp[i + 1][j + 1] = true;
+                } else if (dp[i][j + 1] && s1.charAt(i) == s3.charAt(i + j + 1)) {
+                    dp[i + 1][j + 1] = true;
+                }               
+            }
+        }
+        
+        return dp[len1][len2];
+        
+    }
+}
+</pre>
+
