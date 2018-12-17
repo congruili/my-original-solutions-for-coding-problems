@@ -738,3 +738,249 @@ public class Solution {
 }
 </pre>
 
+### 20. Dices Sum
+<pre>
+public class Solution {
+    /**
+     * @param n an integer
+     * @return a list of Map.Entry<sum, probability>
+     */
+    public List<Map.Entry<Integer, Double>> dicesSum(int n) {
+        // Write your code here
+        // Ps. new AbstractMap.SimpleEntry<Integer, Double>(sum, pro)
+        // to create the pair
+        double[][] dp = new double[n + 1][6 * n + 1];
+        
+        for (int i = 1; i <= 6; ++i) {
+            dp[1][i] = 1.0 / 6;        
+        }
+        
+        for (int i = 2; i <= n; ++i) {
+            for (int j = i - 1; j <= 6 * (i - 1); ++j) {
+                for (int k = 1; k <= 6; ++k) {
+                    dp[i][j + k] += dp[i - 1][j] * 1.0 / 6;                    
+                }            
+            }        
+        }
+        
+        List<Map.Entry<Integer, Double>> list = 
+                new ArrayList<Map.Entry<Integer, Double>>();
+        
+        for (int i = n; i <= 6 * n; ++i) {
+            list.add(new AbstractMap.SimpleEntry<Integer, Double>(i, dp[n][i]));            
+        }
+        
+        return list;     
+    }
+}
+</pre>
+
+### 43. Maximum Subarray III
+<pre>
+public class Solution {
+    /**
+     * @param nums: A list of integers
+     * @param k: An integer denote to find k non-overlapping subarrays
+     * @return: An integer denote the sum of max k non-overlapping subarrays
+     */
+    public int maxSubArray(int[] nums, int k) {
+        // write your code here
+        if (nums == null || nums.length < k) {
+            return 0;
+        }
+        
+        int n = nums.length;
+        int[][] local = new int[n + 1][k + 1];
+        int[][] global = new int[n + 1][k + 1];
+        
+        for (int j = 1; j <= k; ++j) {
+            local[j - 1][j] = Integer.MIN_VALUE;
+            global[j - 1][j] = Integer.MIN_VALUE;
+            for (int i = j; i <= n; ++i) {
+                local[i][j] = Math.max(global[i - 1][j - 1], local[i - 1][j]) + nums[i - 1];
+                global[i][j] = Math.max(global[i - 1][j], local[i][j]);
+            }    
+        }
+        
+        return global[n][k];        
+    }
+}
+</pre>
+
+### 393. Best Time to Buy and Sell Stock IV
+<pre>
+public class Solution {
+    /**
+     * @param K: An integer
+     * @param prices: An integer array
+     * @return: Maximum profit
+     */
+    public int maxProfit(int K, int[] prices) {
+        // write your code here
+        if (K == 0) {
+            return 0;
+        }
+        
+        int n = prices.length;
+        
+        if (K > n / 2) {
+            int rst = 0;
+            for (int i = 1; i < n; ++i) {
+                rst += Math.max(prices[i] - prices[i - 1], 0);
+            }
+            
+            return rst;
+        }
+        
+        int[][] local = new int[n][K + 1];
+        int[][] global = new int[n][K + 1];
+        
+        for (int j = 1; j <= K; ++j) {
+            for (int i = 1; i < n; ++i) {
+                int diff = prices[i] - prices[i - 1];
+                
+                local[i][j] = Math.max(global[i - 1][j - 1], local[i - 1][j]) + diff;
+                global[i][j] = Math.max(global[i - 1][j], local[i][j]);         
+            }    
+        }
+        
+        return global[n - 1][K];     
+        
+    }
+}
+</pre>
+
+### 89. k Sum
+<pre>
+public class Solution {
+    /**
+     * @param A: An integer array
+     * @param k: A positive integer (k <= length(A))
+     * @param target: An integer
+     * @return: An integer
+     */
+    public int kSum(int[] A, int k, int target) {
+        // write your code here
+        if (A == null || A.length == 0) {
+            return 0;
+        }
+        
+        int n = A.length;
+        int[][][] dp = new int[n + 1][k + 1][target + 1];
+        
+        for (int i = 0; i <= n; ++i) {
+            dp[i][0][0] = 1;
+        }
+        
+        for (int i = 1; i <= n; ++i) {
+            for (int j = 1; j <= i && j <= k; ++j) {
+                for (int m = 0; m <= target; ++m) {
+                    dp[i][j][m] += dp[i - 1][j][m];
+                    if (m + A[i - 1] <= target) {
+                        dp[i][j][m + A[i - 1]] += dp[i - 1][j - 1][m];                
+                    }            
+                }         
+            }     
+        }
+        
+        return dp[n][k][target];
+        
+    }
+}
+</pre>
+
+### 91. Minimum Adjustment Cost
+<pre>
+public class Solution {
+    /*
+     * @param A: An integer array
+     * @param target: An integer
+     * @return: An integer
+     */
+    public int MinAdjustmentCost(List<Integer> A, int target) {
+        // write your code here
+        if (A == null || A.size() == 0) {
+            return 0;
+        }
+        
+        int n = A.size();
+        
+        int[][] dp = new int[n + 1][100 + 1];
+        
+        for (int i = 1; i <= 100; ++i) {
+            dp[1][i] = Math.abs(A.get(0) - i);         
+        }
+        
+        for (int i = 2; i <= n; ++i) {
+            for (int j = 1; j <= 100; ++j) {
+                dp[i][j] = Integer.MAX_VALUE;
+                
+                for (int k = 1; k <= 100; ++k) {
+                    if (Math.abs(k - j) <= target) {
+                        dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + Math.abs(A.get(i - 1) - j));                
+                    }            
+                }             
+            }     
+        }
+        
+        int rst = Integer.MAX_VALUE;
+        
+        for (int i = 1; i <= 100; ++i) {
+            rst = Math.min(rst, dp[n][i]);
+        }
+        
+        return rst;
+    }
+}
+</pre>
+
+### 108. Palindrome Partitioning II
+<pre>
+public class Solution {
+    /**
+     * @param s: A string
+     * @return: An integer
+     */
+    public int minCut(String s) {
+        // write your code here
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int len = s.length();
+        boolean[][] valid = new boolean[len][len];
+        
+        for (int i = 0; i < len; ++i) {
+            valid[i][i] = true;
+        }
+        
+        for (int i = 0; i < len - 1; ++i) {
+            if (s.charAt(i) == s.charAt(i + 1)) {
+                valid[i][i + 1] = true; 
+            }
+        }
+        
+        for (int i = len - 2; i >= 0; --i) {
+            for (int j = i + 2; j < len; ++j) {
+                if (valid[i + 1][j - 1] && s.charAt(i) == s.charAt(j)) {
+                    valid[i][j] = true;
+                }         
+            }    
+        }
+        
+        int[] rst = new int[len + 1];
+        
+        for (int i = 0; i < len; ++i) {
+            rst[i + 1] = rst[i] + 1;
+            for (int j = 0; j <= i; ++j) {
+                if (valid[j][i]) {
+                    rst[i + 1] = Math.min(rst[i + 1], rst[j] + 1);                
+                }        
+            }        
+        }
+        
+        return rst[len] - 1;
+        
+    }
+}
+</pre>
