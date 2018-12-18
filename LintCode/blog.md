@@ -984,3 +984,68 @@ public class Solution {
     }
 }
 </pre>
+
+### 32. Longest Valid Parentheses(LC)
+<pre>
+class Solution {
+    public int longestValidParentheses(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        
+        int maxLen = 0;
+        Stack<Integer> stack = new Stack<>();
+        
+        stack.push(-1);
+        
+        for (int i = 0; i < s.length(); ++i) {
+            if (s.charAt(i) == '(') {
+                stack.push(i);
+            } else {
+                stack.pop();
+                if (stack.isEmpty()) {
+                    stack.push(i);
+                } else {
+                    maxLen = Math.max(maxLen, i - stack.peek());
+                }
+            }    
+        }
+        
+        return maxLen;        
+    }
+}
+</pre>
+
+### 140. Fast Power
+<pre>
+public class Solution {
+    /**
+     * @param a: A 32bit integer
+     * @param b: A 32bit integer
+     * @param n: A 32bit integer
+     * @return: An integer
+     */
+    public int fastPower(int a, int b, int n) {
+        // write your code here
+        if (n == 0) {
+            return 1 % b;
+        }
+        
+        if (n == 1) {
+            return a % b;
+        }
+        
+        long tmp = fastPower(a, b, n / 2);
+        long rst = tmp * tmp % b;
+        
+        if (n % 2 == 1) {
+            rst = rst * a % b;
+        }
+        
+        return (int)rst;        
+            
+    }
+}
+</pre>
+
+
