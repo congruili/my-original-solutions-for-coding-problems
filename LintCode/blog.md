@@ -1048,4 +1048,34 @@ public class Solution {
 }
 </pre>
 
+### 371. Print Numbers by Recursion
+<pre>
+public class Solution {
+    /**
+     * @param n: An integer
+     * @return: An array storing 1 to the largest number with n digits.
+     */
+    public List<Integer> numbersByRecursion(int n) {
+        // write your code here
+        List<Integer> rst = new ArrayList<>();
+        helper(n, 0, rst);
+        return rst;
+    }
+    
+    private void helper(int n, int ans, List<Integer> rst) {
+        if (n == 0) {
+            if (ans > 0) {
+                rst.add(ans);
+            }     
+            
+            return;
+        }
+        
+        for (int i = 0; i <= 9; ++i) {
+            helper(n - 1, ans * 10 + i, rst);        
+        }    
+    
+    }
+}
+</pre>
 
